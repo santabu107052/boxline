@@ -1,0 +1,28 @@
+{
+  "name": "Boxline: Dots & Boxes",
+  "short_name": "Boxline",
+  "description": "Cờ Ô Vuông — nối cạnh tô ô vuông, chơi với máy hoặc 2 người, chơi được offline.",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F7F8FA",
+  "theme_color": "#F7F8FA",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

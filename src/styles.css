@@ -1,0 +1,1275 @@
+/* ==========================================================================
+   Dots & Boxes — design tokens. Nguồn: docs/20-DESIGN.md §2 (đã đo WCAG ở §2.5)
+   data-theme trên <html>: "light" | "dark" | không set = theo hệ thống
+   Thứ tự bắt buộc: :root → @media dark → [data-theme=dark] → [data-theme=light]
+   ========================================================================== */
+
+/* 1) LIGHT — bảng gốc. --l-* là "nguyên liệu" thô, --surface-* v.v. là bảng đang áp dụng */
+:root {
+  color-scheme: light dark;
+  --l-surface-0:#F7F8FA; --l-surface-1:#FFFFFF; --l-surface-2:#EEF0F4;
+  --l-surface-tint-a:#E8EEFD; --l-surface-tint-b:#FCEFD9; --l-surface-scrim:rgba(17,24,39,.40);
+  --l-text-primary:#111827; --l-text-secondary:#475569; --l-text-muted:#5D6779; --l-text-on-accent:#FFFFFF;
+  --l-grid-line:#7C879B; --l-grid-dot:#475569; --l-border:#7C879B; --l-border-strong:#475569; --l-hairline:rgba(124,135,155,.40);
+  --l-player-a:#2563EB; --l-player-a-hover:#1D4ED8; --l-player-a-pattern:rgba(37,99,235,.16);
+  --l-player-b:#A3540A; --l-player-b-hover:#7C3E06; --l-player-b-pattern:rgba(163,84,10,.18);
+  --l-box-a-bg:#E8EEFD; --l-box-a-border:#2563EB; --l-box-b-bg:#FCEFD9; --l-box-b-border:#A3540A;
+  --l-accent:#1D4ED8; --l-accent-hover:#1E40AF; --l-accent-soft:#DCE6FD; --l-focus-ring:#1D4ED8; --l-focus-ring-gap:#FFFFFF;
+  --l-danger:#B42318; --l-danger-soft:rgba(180,35,24,.10); --l-success:#067647; --l-success-soft:rgba(6,118,71,.10);
+  --l-toast-bg:#111827; --l-toast-text:#F2F4F7;
+  --l-shadow-1:0 1px 2px rgba(17,24,39,.06),0 1px 3px rgba(17,24,39,.08); --l-shadow-2:0 8px 24px rgba(17,24,39,.10);
+
+  /* kích thước/chữ/motion — KHÔNG đổi theo theme */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  --radius-xs:4px; --radius-sm:8px; --radius-md:12px; --radius-lg:16px;
+  --radius-full:9999px; --box-radius:8px;
+  --tap-min:44px; --tap-lg:48px; --control-h:44px; --control-h-lg:52px;
+  --stroke-1:1.5px; --stroke-2:2px; --stroke-3:3px;
+  --focus-width:2px; --focus-offset:2px;
+  --ad-reserve:50px; /* banner 320x50 · 320x100 dùng 56px · KHÔNG đổi lúc runtime */
+  --dur-fast:120ms; --dur-base:200ms; --dur-slow:320ms;
+  --ease-out:cubic-bezier(.2,.7,.3,1); --ease-in-out:cubic-bezier(.4,0,.2,1);
+  --ease-spring:cubic-bezier(.34,1.4,.5,1);
+  --font-sans:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text",
+    "Segoe UI",Roboto,"Helvetica Neue","Noto Sans",Arial,sans-serif;
+  --fs-display:40px; --fs-h1:28px; --fs-h2:20px; --fs-body:16px; --fs-body-strong:16px;
+  --fs-sm:14px; --fs-xs:12px; --fs-caps:11px;
+}
+
+/* 2) Áp bảng LIGHT cho mọi trường hợp không phải dark (ghi đè tay hoặc hệ thống sáng) */
+:root, [data-theme="light"], :root:not([data-theme="dark"]) {
+  --surface-0:var(--l-surface-0); --surface-1:var(--l-surface-1); --surface-2:var(--l-surface-2);
+  --surface-tint-a:var(--l-surface-tint-a); --surface-tint-b:var(--l-surface-tint-b);
+  --surface-scrim:var(--l-surface-scrim);
+  --text-primary:var(--l-text-primary); --text-secondary:var(--l-text-secondary);
+  --text-muted:var(--l-text-muted); --text-on-accent:var(--l-text-on-accent);
+  --grid-line:var(--l-grid-line); --grid-dot:var(--l-grid-dot); --border:var(--l-border);
+  --border-strong:var(--l-border-strong); --hairline:var(--l-hairline);
+  --player-a:var(--l-player-a); --player-a-hover:var(--l-player-a-hover);
+  --player-a-pattern:var(--l-player-a-pattern);
+  --player-b:var(--l-player-b); --player-b-hover:var(--l-player-b-hover);
+  --player-b-pattern:var(--l-player-b-pattern);
+  --box-a-bg:var(--l-box-a-bg); --box-a-border:var(--l-box-a-border);
+  --box-b-bg:var(--l-box-b-bg); --box-b-border:var(--l-box-b-border);
+  --accent:var(--l-accent); --accent-hover:var(--l-accent-hover); --accent-soft:var(--l-accent-soft);
+  --focus-ring:var(--l-focus-ring); --focus-ring-gap:var(--l-focus-ring-gap);
+  --danger:var(--l-danger); --danger-soft:var(--l-danger-soft);
+  --success:var(--l-success); --success-soft:var(--l-success-soft);
+  --toast-bg:var(--l-toast-bg); --toast-text:var(--l-toast-text);
+  --shadow-1:var(--l-shadow-1); --shadow-2:var(--l-shadow-2);
+  color-scheme: light;
+}
+
+/* 3) DARK theo HỆ THỐNG (không áp khi người dùng đã ghim "light") */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]), [data-theme="dark"] {
+      --surface-0:#0B0E13; --surface-1:#141821; --surface-2:#1C222D;
+      --surface-tint-a:#13203A; --surface-tint-b:#2A2114; --surface-scrim:rgba(3,5,9,.64);
+      --text-primary:#F2F4F7; --text-secondary:#C3CAD6; --text-muted:#98A2B3; --text-on-accent:#0A1120;
+      --grid-line:#636F88; --grid-dot:#C3CAD6; --border:#636F88; --border-strong:#98A2B3; --hairline:rgba(99,111,136,.56);
+      --player-a:#7CA6FF; --player-a-hover:#A6C2FF; --player-a-pattern:rgba(124,166,255,.22);
+      --player-b:#F5B54D; --player-b-hover:#FFD08A; --player-b-pattern:rgba(245,181,77,.24);
+      --box-a-bg:#13203A; --box-a-border:#7CA6FF; --box-b-bg:#2A2114; --box-b-border:#F5B54D;
+      --accent:#93B4FF; --accent-hover:#A9C3FF; --accent-soft:#1E2B45; --focus-ring:#93B4FF; --focus-ring-gap:#0B0E13;
+      --danger:#FF9C8F; --danger-soft:rgba(255,156,143,.14); --success:#6FD79A; --success-soft:rgba(111,215,154,.14);
+      --toast-bg:#1F2937; --toast-text:#F2F4F7;
+      --shadow-1:0 1px 2px rgba(0,0,0,.48),0 1px 3px rgba(0,0,0,.40); --shadow-2:0 12px 32px rgba(0,0,0,.56);
+    color-scheme: dark;
+  }
+}
+/* 4) Ghi đè tay "dark" — cần riêng vì @media ở trên KHÔNG chạy khi hệ thống đang sáng */
+:root[data-theme="dark"] {
+  --surface-0:#0B0E13; --surface-1:#141821; --surface-2:#1C222D;
+  --surface-tint-a:#13203A; --surface-tint-b:#2A2114; --surface-scrim:rgba(3,5,9,.64);
+  --text-primary:#F2F4F7; --text-secondary:#C3CAD6; --text-muted:#98A2B3; --text-on-accent:#0A1120;
+  --grid-line:#636F88; --grid-dot:#C3CAD6; --border:#636F88; --border-strong:#98A2B3;
+  --hairline:rgba(99,111,136,.56);
+  --player-a:#7CA6FF; --player-a-hover:#A6C2FF; --player-a-pattern:rgba(124,166,255,.22);
+  --player-b:#F5B54D; --player-b-hover:#FFD08A; --player-b-pattern:rgba(245,181,77,.24);
+  --box-a-bg:#13203A; --box-a-border:#7CA6FF; --box-b-bg:#2A2114; --box-b-border:#F5B54D;
+  --accent:#93B4FF; --accent-hover:#A9C3FF; --accent-soft:#1E2B45;
+  --focus-ring:#93B4FF; --focus-ring-gap:#0B0E13;
+  --danger:#FF9C8F; --danger-soft:rgba(255,156,143,.14);
+  --success:#6FD79A; --success-soft:rgba(111,215,154,.14);
+  --toast-bg:#1F2937; --toast-text:#F2F4F7;
+  --shadow-1:0 1px 2px rgba(0,0,0,.48),0 1px 3px rgba(0,0,0,.40);
+  --shadow-2:0 12px 32px rgba(0,0,0,.56);
+  color-scheme: dark;
+}
+
+/* 5) Ghi đè tay đã chọn "light" khi hệ thống đang TỐI (đứng sau để thắng bảng dark) */
+:root[data-theme="light"] {
+  --surface-0:#F7F8FA; --surface-1:#FFFFFF; --surface-2:#EEF0F4;
+  --surface-tint-a:#E8EEFD; --surface-tint-b:#FCEFD9; --surface-scrim:rgba(17,24,39,.40);
+  --text-primary:#111827; --text-secondary:#475569; --text-muted:#5D6779; --text-on-accent:#FFFFFF;
+  --grid-line:#7C879B; --grid-dot:#475569; --border:#7C879B; --border-strong:#475569;
+  --hairline:rgba(124,135,155,.40);
+  --player-a:#2563EB; --player-a-hover:#1D4ED8; --player-a-pattern:rgba(37,99,235,.16);
+  --player-b:#A3540A; --player-b-hover:#7C3E06; --player-b-pattern:rgba(163,84,10,.18);
+  --box-a-bg:#E8EEFD; --box-a-border:#2563EB; --box-b-bg:#FCEFD9; --box-b-border:#A3540A;
+  --accent:#1D4ED8; --accent-hover:#1E40AF; --accent-soft:#DCE6FD;
+  --focus-ring:#1D4ED8; --focus-ring-gap:#FFFFFF;
+  --danger:#B42318; --danger-soft:rgba(180,35,24,.10);
+  --success:#067647; --success-soft:rgba(6,118,71,.10);
+  --toast-bg:#111827; --toast-text:#F2F4F7;
+  --shadow-1:0 1px 2px rgba(17,24,39,.06),0 1px 3px rgba(17,24,39,.08);
+  --shadow-2:0 8px 24px rgba(17,24,39,.10);
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   PHẦN ỨNG DỤNG — layout & component. Nguồn: docs/20-DESIGN.md §3 §4 §5 §7.3 §8.
+   Component CHỈ dùng tên token không tiền tố: var(--text-primary), var(--accent)…
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: clip;                   /* tràn ngang: cắt (trục dọc giữ visible) — CSS Overflow 3; xem ghi chú cuối tệp */
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+button { font-family: inherit; color: inherit; }
+
+/* --- Focus chung: MỘT chỗ duy nhất (DESIGN §5.1) -------------------------- */
+:where(a, button, [role="button"], input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  box-shadow: 0 0 0 calc(var(--focus-width) + var(--focus-offset)) var(--focus-ring-gap);
+}
+
+/* --- Ký hiệu tròn / tam giác nhìn thấy cả khi in đen trắng --------------- */
+.sym { display: inline-block; width: 1.25em; height: 1.25em; flex: 0 0 auto; vertical-align: -0.2em; }
+
+/* ==========================================================================
+   KHUNG ỨNG DỤNG
+   ========================================================================== */
+.app {
+  height: 100dvh;
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-0);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+  overflow-x: clip;   /* chỉ cắt tràn ngang; không đổi trục dọc (giữ bóng đổ/khung cuộn như cũ) */
+}
+
+.screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  animation: screen-in 280ms var(--ease-out) both;
+}
+.screen[hidden] { display: none; }
+.screen.is-leaving { animation: screen-out 200ms var(--ease-out) both; }
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes screen-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding-block: var(--space-1);
+}
+.header__title { margin: 0; font-size: var(--fs-body-strong); font-weight: 700; letter-spacing: -0.01em; }
+.header__sub { font-size: var(--fs-xs); color: var(--text-secondary); }
+.header__spacer { flex: 1 1 auto; }
+
+/* ==========================================================================
+   NÚT
+   ========================================================================== */
+.btn {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--radius-md);
+  min-height: var(--control-h);
+  min-width: var(--tap-min);
+  padding: 0 var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--dur-fast) var(--ease-out), transform 90ms var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  text-align: center;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+  min-height: var(--control-h-lg);
+  padding: 0 var(--space-6);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  box-shadow: var(--shadow-1);
+}
+.btn--primary:hover { background: var(--accent-hover); }
+
+.btn--secondary {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.btn--secondary:hover { filter: brightness(0.97); }
+
+.btn--ghost { color: var(--text-secondary); }
+.btn--ghost:hover { background: var(--surface-2); color: var(--text-primary); }
+
+.btn--danger { color: var(--danger); }
+.btn--danger:hover { background: var(--danger-soft); }
+
+.btn--block { width: 100%; }
+
+.btn[hidden] { display: none !important; }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--icon {
+  width: var(--tap-min);
+  height: var(--tap-min);
+  min-width: var(--tap-min);
+  padding: 0;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+}
+.btn--icon:hover { background: var(--surface-2); color: var(--text-primary); }
+.btn--icon:active { transform: scale(0.94); }
+.btn--icon svg { width: 24px; height: 24px; }
+
+/* Icon stroke 2px, hiện theo currentColor */
+.icon { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; color: inherit; }
+.icon [fill="none"] { fill: none; }
+.brand__mark { color: var(--accent); }
+
+/* ==========================================================================
+   MENU
+   ========================================================================== */
+.menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: var(--space-4);
+  -webkit-overflow-scrolling: touch;
+}
+.brand { text-align: center; padding-block: var(--space-3) var(--space-5); }
+/* Màn Hướng dẫn nhanh: .menu KHÔNG tự cuộn (khối .guide__scroll bên trong cuộn) để khối nút
+   dính đáy luôn hiện, kể cả trên desktop 1280×800. */
+@media (min-width: 480px) {
+  .screen--guide .menu { overflow: visible; }
+}
+.brand__name {
+  margin: 0;
+  font-size: var(--fs-h1);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.brand__sub {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+.brand__mark { display: block; margin: 0 auto var(--space-3); width: 56px; height: 56px; }
+
+.menu__actions { display: grid; gap: var(--space-3); }
+
+.fieldset {
+  border: 0;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  min-width: 0;
+}
+.fieldset__legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.fieldset__hint { font-size: var(--fs-xs); color: var(--text-muted); margin: var(--space-2) 0 0; }
+
+.menu__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.menu__footer .chip { flex: 1 1 auto; justify-content: center; min-width: 0; }
+.menu__head { padding-bottom: var(--space-1); }
+.menu__head .header__title { color: var(--text-secondary); font-weight: 600; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--accent-soft); color: var(--text-primary); }
+.chip svg { width: 20px; height: 20px; }
+
+/* ==========================================================================
+   SEGMENTED CONTROL
+   ========================================================================== */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+.segmented--sizes .segmented__seg { flex: 1 1 28%; }
+.segmented__seg {
+  flex: 1 1 auto;
+  /* Vùng chạm thật ≥ 44×44 ở cả chiều rộng (DESIGN §4.4). Trước đây chỉ có min-height nên ở
+     khung hẹp / zoom 200% đoạn chia hàng bị bóp còn 42px ngang — dưới chuẩn 44. */
+  min-width: var(--tap-min);
+  /* Vùng chạm chuẩn ≥ 44px (DESIGN §4 / --tap-min). Trước đây 38px → dưới chuẩn khi
+     đo bằng CDP trên 320–1280px. Tăng chiều cao không đổi màu/nhãn/bố cục hàng. */
+  min-height: var(--tap-min);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: calc(var(--radius-md) - 3px);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out),
+              transform 90ms var(--ease-out);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.segmented__seg:hover { background: rgba(17, 24, 39, 0.05); }
+:root[data-theme="dark"] .segmented__seg:hover { background: rgba(255, 255, 255, 0.06); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .segmented__seg:hover { background: rgba(255, 255, 255, 0.06); }
+}
+.segmented__seg:active { transform: scale(0.97); }
+.segmented__seg[aria-checked="true"] {
+  /* Ở LIGHT dùng --accent-soft (đằm); ở DARK --accent-soft sáng hơn nền nên cần viền mảnh
+     để khối "đang chọn" tách hẳn khỏi track mà không bị quầng bóng. */
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: none;
+}
+/* DIFF (QC): `.segmented__seg[aria-checked="true"]` khai báo `outline` đè lên rule focus chung
+   `:where(...):focus-visible` (độ ưu tiên 0) → đoạn đang chọn MẤT focus ring khi tab bằng phím
+   (CDP đo được `outline: 1px transparent`). Khai báo lại ring focus-visible ở cùng mức ưu tiên
+   để thắng khi focus; light giữ viền trong suốt như cũ. */
+.segmented__seg[aria-checked="true"]:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  box-shadow: 0 0 0 calc(var(--focus-width) + var(--focus-offset)) var(--focus-ring-gap);
+}
+:root[data-theme="dark"] .segmented__seg[aria-checked="true"] {
+  outline-color: var(--accent);
+  outline-width: 1px;
+  outline-style: solid;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .segmented__seg[aria-checked="true"] {
+    outline-color: var(--accent);
+    outline-width: 1px;
+    outline-style: solid;
+  }
+}
+.segmented__seg[aria-disabled="true"] { color: var(--text-muted); cursor: not-allowed; }
+
+/* ==========================================================================
+   SWITCH (role=switch), luôn nằm trong hàng cao ≥ 44px
+   ========================================================================== */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+}
+.row__label { flex: 1 1 auto; min-width: 0; }
+.row__sub { display: block; font-size: var(--fs-xs); color: var(--text-muted); }
+.row + .row { margin-top: var(--space-1); }
+
+.switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: background-color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out);
+}
+.row[aria-checked="true"] .switch { background: var(--accent); border-color: var(--accent); }
+.row[aria-checked="true"] .switch::after { transform: translateX(18px); background: var(--surface-1); }
+:root[data-theme="dark"] .row[aria-checked="true"] .switch::after { background: var(--surface-0); }
+.row:active .switch::after { transform: scale(0.92); }
+.row[aria-checked="true"]:active .switch::after { transform: translateX(18px) scale(0.92); }
+.row[aria-disabled="true"] { opacity: 0.6; cursor: not-allowed; }
+
+.time-picker { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-2); }
+.time-picker[hidden] { display: none; }
+.time-picker .segmented { flex: 1 1 auto; }
+
+/* ==========================================================================
+   HUD (thanh điểm)
+   ========================================================================== */
+.hud {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 64px;
+  padding: var(--space-2);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+}
+.hud__player {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-fast) var(--ease-out);
+}
+.hud__player--b { justify-content: flex-end; text-align: right; }
+.hud__player.is-turn { background: var(--accent-soft); }
+.hud__player .sym { width: 22px; height: 22px; color: currentColor; }
+.hud__player--a .sym { color: var(--player-a); }
+.hud__player--b .sym { color: var(--player-b); }
+.hud__name { font-size: var(--fs-xs); font-weight: 500; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud__score {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  transition: color var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.hud__score.is-bump { animation: score-bump var(--dur-slow) var(--ease-out); }
+@keyframes score-bump {
+  0% { transform: none; }
+  40% { transform: translateY(-4px) scale(1.12); }
+  100% { transform: none; }
+}
+.hud__clock {
+  flex: 0 0 auto;
+  min-width: 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.hud__clock-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-x);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.hud__clock-time svg { width: 16px; height: 16px; }
+.hud__clock.is-low { background: var(--danger-soft); }
+.hud__clock.is-low .hud__clock-time { color: var(--danger); }
+.hud__progress {
+  width: 100%;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--hairline);
+  overflow: hidden;
+}
+.hud__progress > i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+.hud__clock.is-low .hud__progress > i { background: var(--danger); }
+.hud__clock[hidden] { display: none !important; }
+
+/* ==========================================================================
+   BÀN CỜ
+   ========================================================================== */
+.board-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block: var(--space-2);
+  touch-action: pan-y;
+}
+.board-wrap canvas {
+  display: block;
+  border-radius: var(--radius-md);
+  background: transparent;
+  touch-action: none;
+  outline: none;
+}
+.board-wrap canvas:focus-visible { outline: none; } /* ring vẽ TRÊN canvas theo §6.3 */
+
+.sr-grid {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Nút trong lưới ẩn phải giữ vùng chạm THẬT 44×44 (chuẩn trợ năng) trước khi bị clip;
+   không khai báo, trình duyệt tự co về 0 và vùng chạm mất chuẩn. */
+.sr-grid > button { min-width: 44px; min-height: 44px; }
+
+.combo-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-2);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 3;
+}
+.combo-badge.is-visible {
+  opacity: 1;
+  animation: combo-pop 200ms var(--ease-spring) both;
+}
+@keyframes combo-pop {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Thanh hướng dẫn của tutorial (bám dưới bàn, không che cạnh) */
+.tut-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-1);
+  margin-bottom: var(--space-2);
+}
+.tut-bar[hidden] { display: none; }
+.tut-bar__top { display: flex; align-items: center; gap: var(--space-2); }
+.tut-bar__step { font-size: var(--fs-xs); font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
+.tut-bar__text { margin: 0; font-size: var(--fs-body); line-height: 1.45; }
+.tut-bar__hint { margin: 0; font-size: var(--fs-xs); color: var(--text-secondary); }
+.tut-bar__hint.is-success { color: var(--success); font-weight: 600; }
+.tut-bar__hint.is-fail { color: var(--danger); font-weight: 600; }
+.tut-bar__spacer { flex: 1 1 auto; }
+.tut-bar .btn--ghost { min-height: 36px; padding: 0 var(--space-3); }
+
+/* ==========================================================================
+   ACTION BAR
+   ========================================================================== */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding-bottom: var(--space-1);
+}
+.action-bar .btn { flex: 0 1 auto; }
+.action-bar .btn svg { width: 20px; height: 20px; }
+
+/* ==========================================================================
+   KHUNG CHỪA QUẢNG CÁO — LUÔN chiếm --ad-reserve (chống CLS)
+   ========================================================================== */
+#ad-slot {
+  flex: 0 0 auto;
+  min-height: var(--ad-reserve);
+  height: var(--ad-reserve);
+  width: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  /* Nền khung chừa rất nhạt: người dùng thấy chỗ này "để dành", không phải nội dung. */
+  border-radius: var(--radius-sm);
+}
+#ad-slot > * { display: none; }
+#ad-slot.has-banner > .ad-mock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: var(--fs-caps);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   MODAL — desktop hộp giữa, mobile ≤480px dùng bottom sheet
+   ========================================================================== */
+.modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: var(--space-4); }
+.modal[hidden] { display: none; }
+.modal__scrim { position: absolute; inset: 0; background: var(--surface-scrim); animation: fade-in 120ms var(--ease-out) both; }
+@supports (backdrop-filter: blur(2px)) {
+  @media (prefers-reduced-transparency: no-preference) {
+    .modal__scrim { backdrop-filter: blur(2px); }
+  }
+}
+.modal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-6);
+  animation: panel-in var(--dur-base) var(--ease-out) both;
+}
+.modal__grip { display: none; }
+.modal__head { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-4); }
+.modal__title { margin: 0; font-size: var(--fs-h2); line-height: 1.3; flex: 1 1 auto; }
+.modal__body p { margin: 0 0 var(--space-3); color: var(--text-secondary); }
+.modal__body p:last-child { margin-bottom: 0; }
+.modal__actions { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-5); }
+.modal__actions--row { flex-direction: row; justify-content: flex-end; flex-wrap: wrap; }
+.modal__actions--row .btn { flex: 1 1 auto; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes panel-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 480px) {
+  .modal { align-items: flex-end; padding: 0; }
+  .modal__panel {
+    max-width: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom));
+    max-height: calc(90dvh - env(safe-area-inset-top));
+    animation: sheet-in var(--dur-base) var(--ease-out) both;
+  }
+  .modal__grip {
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--border);
+    margin: 0 auto var(--space-4);
+  }
+}
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.rules-list { margin: 0; padding-left: var(--space-5); }
+.rules-list li { margin-block: var(--space-2); font-size: var(--fs-body); }
+.rules-list li::marker { color: var(--accent); }
+
+.accordion { border-top: 1px solid var(--hairline); margin-top: var(--space-4); }
+.accordion__item { border-bottom: 1px solid var(--hairline); }
+.accordion__trigger {
+  width: 100%;
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.accordion__trigger .chev { margin-left: auto; transition: transform var(--dur-base) var(--ease-out); }
+.accordion__trigger[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.accordion__panel { padding: 0 0 var(--space-3); font-size: var(--fs-sm); color: var(--text-secondary); }
+.accordion__panel[hidden] { display: none; }
+.accordion__panel strong { color: var(--text-primary); }
+
+/* ==========================================================================
+   TOAST
+   ========================================================================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--ad-reserve) + 64px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(12px);
+  width: auto;
+  max-width: min(92vw, 420px);
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  line-height: 1.4;
+  border-radius: var(--radius-md);
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  font-size: var(--fs-sm);
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 90;
+  transition: opacity 160ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+/* Chip "Chạm để bật âm thanh" */
+.sound-chip {
+  /* Nằm trong luồng bố cục, ngay trên khung quảng cáo → không bao giờ đè nội dung. */
+  position: relative;
+  flex: 0 0 auto;
+  align-self: center;
+  margin: var(--space-1) auto var(--space-1);
+  z-index: 2;
+  max-width: min(92vw, 360px);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);       /* QC: chip là nút thật → phải ≥ 44px (trước 40px) */
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+}
+.sound-chip[hidden] { display: none !important; }
+.sound-chip svg { width: 18px; height: 18px; }
+
+/* ==========================================================================
+   OẲN TÙ TÌ
+   ========================================================================== */
+.rps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+}
+.rps__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  min-height: 120px;
+}
+.rps__hand {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+.rps__hand svg { width: 44px; height: 44px; }
+.rps__hand.is-shaking { animation: rps-shake 480ms var(--ease-in-out) infinite; }
+@keyframes rps-shake {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-6px) rotate(4deg); }
+}
+.rps__vs { font-size: var(--fs-sm); font-weight: 700; color: var(--text-muted); }
+.rps__choices { display: flex; gap: var(--space-3); }
+.rps__choice {
+  width: 84px;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.rps__choice:hover { background: var(--surface-2); }
+.rps__choice svg { width: 40px; height: 40px; }
+
+/* ==========================================================================
+   KẾT QUẢ
+   ========================================================================== */
+.result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-6) var(--space-4);
+}
+.result__title { margin: 0; font-size: var(--fs-h1); }
+.result__scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  width: 100%;
+}
+.result__col { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 84px; }
+.result__col .sym { width: 26px; height: 26px; }
+.result__col--a .sym { color: var(--player-a); }
+.result__col--b .sym { color: var(--player-b); }
+.result__name { font-size: var(--fs-xs); color: var(--text-secondary); font-weight: 600; }
+.result__num {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.result__sep { width: 1px; height: 48px; background: var(--border); }
+.result__summary { margin: 0; font-size: var(--fs-sm); color: var(--text-secondary); text-align: center; }
+.result__actions { display: grid; gap: var(--space-2); width: 100%; margin-top: var(--space-4); }
+.result__actions .btn { width: 100%; }
+/* CTA gắn đáy (QC): luôn thấy trong khung nhìn, không phải cuộn — banner ad-slot vẫn ở DƯỚI khối này
+   (khung #ad-slot nằm cuối .app, nên nút không bao giờ bị quảng cáo che). */
+.result__actions--sticky { margin-top: auto; padding-top: var(--space-3); }
+.guide__scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: var(--space-2); }
+/* Gợi ý "còn nội dung để cuộn" bằng đường mảnh mờ (không dùng gradient rực — DESIGN §1.2). */
+.screen--guide .guide__scroll { background: linear-gradient(to bottom, transparent calc(100% - 24px), var(--surface-0)) local; }
+/* `.app` đặt padding-inline bằng env(safe-area-inset-*) — khác 0 trên iPhone trong market → khung con
+   hẹp hơn nhưng đo ở đây được thấy vấn đề thật: khe hở giữa #ad-slot và #sound-chip (2 phần tử
+   anh em của .app) là margin đã biến mất → chip dính sát khung banner. */
+#ad-slot + .sound-chip { margin-top: var(--space-2); }
+.guide__actions {
+  flex: 0 0 auto;
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-2) var(--space-1);
+  background: var(--surface-0);
+}
+/* Lý do: `.screen` đặt flex-direction: column nhưng `.menu` (phần cuộn) lại khai báo
+   `flex: 1 1 auto` theo trục NGANG, nên nó co theo bề rộng và chỉ còn nội dung tràn — khiến khối
+   CTA dính đáy bị đẩy xuống tận đáy vùng content (ngoài khung nhìn). Ép lại đúng trục dọc. */
+.screen--guide .menu { flex: 1 1 auto; flex-basis: 0; height: auto; justify-content: flex-start; }
+.screen--result .result { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.screen--result .result__actions--sticky { flex: 0 0 auto; }
+.guide__actions .btn { width: 100%; }
+
+/* ==========================================================================
+   HƯỚNG DẪN NHANH (3 thẻ)
+   ========================================================================== */
+.guide__cards { display: grid; gap: var(--space-3); min-width: 0; }
+.guide-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-1);
+}
+.guide-card canvas {
+  width: 88px !important;
+  height: 88px !important;
+  display: block;
+  max-width: 100%;
+}
+.guide-card__title { margin: 0 0 var(--space-1); font-size: var(--fs-body-strong); }
+.guide-card__text { margin: 0; font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.45; overflow-wrap: break-word; }
+.guide-card > div { min-width: 0; }
+
+/* ==========================================================================
+   TRANG LỖI file://
+   ========================================================================== */
+.gate {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: var(--surface-0);
+  z-index: 200;
+  overflow-y: auto;
+}
+.gate.is-visible { display: flex; }
+.gate__panel {
+  max-width: 520px;
+  width: 100%;
+  background: var(--surface-1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-6);
+}
+.gate__title { margin: 0 0 var(--space-3); font-size: var(--fs-h2); }
+.gate__panel p { margin: 0 0 var(--space-3); color: var(--text-secondary); }
+.gate__panel pre {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  overflow-x: auto;
+  font-size: var(--fs-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.gate__panel code {
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em;
+}
+
+/* ==========================================================================
+   RESPONSIVE — breakpoint theo nội dung (DESIGN §4.2)
+   ========================================================================== */
+/* xs: < 360px */
+@media (max-width: 359px) {
+  .app { padding-inline: 12px; }
+  :root { --fs-h1: 22px; --fs-display: 32px; }
+  .action-bar .btn__label { display: none; }
+  .action-bar .btn--icon-label { padding: 0 var(--space-3); }
+  .brand__mark { width: 44px; height: 44px; }
+  .result__scores { gap: var(--space-4); }
+}
+
+/* Khung hẹp / zoom 200%: thẻ Hướng dẫn nhanh xếp DỌC (ảnh trên, chữ dưới).
+   Đo được: ở viewport 160–195 CSS px, lưới `88px + 1fr` chỉ để lại 10–45px cho chữ → tiêu đề vỡ
+   từng âm tiết, gần như không đọc được (ảnh qc/shots-final/r16-zoom200-menu-dark.png). */
+@media (max-width: 359px) {
+  .guide-card { grid-template-columns: minmax(0, 1fr); justify-items: start; row-gap: var(--space-2); }
+  .guide-card canvas { width: 72px !important; height: 72px !important; }
+  .guide-card__title { font-size: var(--fs-body); }
+  /* Khối CTA & khung quảng cáo luôn rộng đúng khung nhìn (trước đây kẹt max-width: 560px trong
+     khi .app rộng hơn → lệch bên phải, chữ "Chạm để bật âm thanh" bị cắt — xem r16). */
+  .guide__actions, .sound-chip { width: 100%; max-width: 100%; margin-inline: 0; }
+
+  .guide__actions .btn { white-space: normal; }
+}
+}
+
+/* sm: 360–479px — bố cục chuẩn (không cần override thêm) */
+
+/* md: 480–767px */
+@media (min-width: 480px) {
+  .hud { min-height: 72px; }
+  .action-bar .btn__label { display: inline; }
+  .guide__cards { grid-template-columns: 1fr; }
+}
+
+/* md+: ≥ 768px dọc */
+@media (min-width: 768px) {
+  .screen { max-width: 560px; }
+  .board-wrap { margin-block: var(--space-6); }
+  .guide-card { grid-template-columns: 120px 1fr; }
+  .guide-card canvas { width: 120px !important; height: 120px !important; }
+}
+
+/* lg: ≥ 1024px ngang — hai cột */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .app { padding-inline: var(--space-6); }
+  .screen--play { max-width: none; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+  .screen--play .play-side { display: flex; flex-direction: column; gap: var(--space-3); }
+  .screen--play .board-wrap { max-width: min(64vh, 640px); margin-inline: auto; width: 100%; }
+  .screen--play .header,
+  .screen--play .tut-bar,
+  .screen--play .action-bar { grid-column: 1; }
+}
+
+/* landscape phone: height < 500px */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* QC: chip âm thanh trong luồng ghim được `position: fixed` (căn giữa đáy) trong khi KHUNG CHỪA
+     QUẢNG CÁO nằm ngay dưới → chip chồng lên banner và lên thẻ Hướng dẫn ngay trên nó.
+     Đặt chip + banner vào một khối dính đáy duy nhất, ưu tiên hiển thị. */
+  .app > #ad-slot, .app > .sound-chip { position: static; }
+  #ad-slot { order: 9; }
+  .sound-chip { order: 8; margin: var(--space-1) auto 0; }
+  /* Màn chơi ở landscape được tự cuộn (bàn giữ ≤ 165px); khi có thanh cuộn thì bề rộng nội dung hẹp
+     hơn khung → hàng con phải kéo hết bề rộng để banner không còn lố 54px bên trái. */
+  .app > .screen { width: auto; align-self: stretch; }
+  .app { overflow: hidden; }
+  /* Ở khung thấp (<500px), phần còn lại của .app sau header (~24px) không đủ chỗ cho banner 50px +
+     chip 44px → đặt banner theo THỨ TỰ TRỰC QUAN (chip sau banner) và không chừa 50px khi chưa có
+     quảng cáo thật, tránh thanh cuộn sinh ra rồi đè lên thẻ Hướng dẫn. */
+  .app > #ad-slot { height: auto; min-height: 0; }
+  .app > #ad-slot.has-banner { min-height: var(--ad-reserve); }
+  .app > .sound-chip { flex: 0 0 auto; }
+  .header { min-height: 0; padding-block: 2px; }
+  .header__title, .header__sub { display: none; }
+  .hud { min-height: 48px; padding: 2px var(--space-2); }
+  .hud__score { font-size: var(--fs-body); }
+  .brand { padding-block: var(--space-1) var(--space-2); }
+  .board-wrap { max-height: calc(100dvh - 48px - 56px - var(--ad-reserve)); }
+  .action-bar { min-height: 44px; }
+  .modal { align-items: center; padding: var(--space-2); }
+  .modal__panel { max-height: calc(100dvh - 16px); padding: var(--space-4); border-radius: var(--radius-lg); }
+  .modal__grip { display: none; }
+}
+
+/* ==========================================================================
+   REDUCED MOTION — một media query toàn cục (DESIGN §7.3)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .screen { animation: none; }
+  .modal__panel { animation: fade-in 120ms linear both; }
+  .combo-badge.is-visible { animation: none; opacity: 1; transform: translate(-50%, -50%); }
+  .hud__progress > i { transition: none; }
+}
+
+/* Nội dung chỉ cho trình đọc màn hình */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+#selftest { white-space: pre-wrap; font-size: 11px; color: var(--danger); padding: var(--space-2); }
+#selftest[hidden] { display: none; }
+
+/* ==========================================================================
+   TUTORIAL BƯỚC 5 — hàng tùy chọn THẬT bê xuống dưới bàn (bàn bị khoá)
+   Nguồn: docs/30-TUTORIAL.md §2 bước 5. Chỉ tồn tại khi `#tut-options` không hidden.
+   ========================================================================== */
+.tut-options {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin-block: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+.tut-options[hidden] { display: none; }
+.tut-options .fieldset { margin-bottom: var(--space-2); }
+.tut-options .fieldset__legend { font-size: var(--fs-xs); }
+.tut-options__lead {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+/* Bước 5 chiếm thêm chỗ → bàn co lại để không bị cắt (không đổi tỉ lệ, chỉ đổi khung). */
+.screen--play:has(#tut-options:not([hidden])) .board-wrap { margin-block: 0; }
+
+
+/* ==========================================================================
+   KHUNG HẸP KHI TRANG BỊ PHÓNG TO (CSS zoom / zoom trình duyệt)
+   Vấn đề (đo được): media query chạy trên bề rộng LAYOUT, không phải bề rộng NHÌN THẤY. Ở 390px phóng
+   200% (≈195 CSS px nhìn thấy) mọi rule `max-width` ở trên không kích hoạt → chữ vỡ cột và chip âm
+   thanh tràn mép (ảnh QC r16 trước khi sửa).
+   Cách làm: `src/zoom-guard.js` đặt `data-zoom="narrow"` trên `<html>` khi số đo
+   `documentElement.clientWidth / (visualViewport hợp lệ || innerWidth)` < 340px (nhìn thấy), nghe cả
+   `resize` + `visualViewport.resize`. Không dùng container query: đã thử và BỊ LOẠI (Chrome 157 headless
+   bỏ khối `@container` không bọc `@supports`; khi bọc thì container inline-size gây vòng phụ thuộc đo —
+   chip co còn 56px trên màn 390px, bằng chứng trong `qc/out/`).
+   ========================================================================== */
+:root[data-zoom="narrow"] .sound-chip span { display: none; }
+:root[data-zoom="narrow"] .sound-chip {
+  width: 56px;
+  min-height: var(--tap-min);
+  height: var(--tap-min);
+  justify-content: center;
+  padding: 0;
+  margin-inline: auto;
+}
+:root[data-zoom="narrow"] .guide-card {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  row-gap: var(--space-2);
+}
+:root[data-zoom="narrow"] .guide-card canvas { width: 72px !important; height: 72px !important; }
+:root[data-zoom="narrow"] .guide-card__title { font-size: var(--fs-body); }
+:root[data-zoom="narrow"] .guide__actions .btn { white-space: normal; font-size: var(--fs-body); }
+/* Khối hành động dính đáy; phần thẻ ở trên được phép cuộn để không bị khối hành động che. */
+:root[data-zoom="narrow"] .guide__actions,
+:root[data-zoom="narrow"] .sound-chip { max-width: none; }
+
+/* ==========================================================================
+   LANDSCAPE THẤP (< 500px): thứ tự đáy = [nội dung phân bổ] [banner] [chip]
+   Không thể vừa header (24) + banner (50) + chip (44) trong 375px khi màn Hướng dẫn cần ~200px
+   cho thẻ + khối CTA. Đặt banner theo thứ tự TRỰC QUAN (chip sau banner) và chỉ chừa 50px khi
+   banner THẬT sự hiện diện (`.has-banner`) — tránh sinh thanh cuộn làm chip đè lên thẻ.
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app > #ad-slot { order: 8; height: auto; min-height: 0; flex: 0 0 auto; }
+  .app > #ad-slot.has-banner { min-height: var(--ad-reserve); }
+  .app > .sound-chip { order: 9; flex: 0 0 auto; margin: var(--space-1) auto 0; }
+}
+
+/* Landscape thấp + CHỜ âm thanh: chip 44px không thể xếp dưới banner 50px trong 375px nếu không
+   chồng lên thẻ Hướng dẫn. Khi người dùng CHƯA bật âm thanh, đặt chip ở GÓC TRÁI header (vùng trống)
+   — không đè nội dung và không cần thêm chiều cao. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app > .sound-chip:not([hidden]) {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + 2px);
+    left: max(8px, env(safe-area-inset-left));
+    z-index: 5;
+    order: 0;
+    margin: 0;
+  }
+}
+
+/* ==========================================================================
+   HÀNG THANH TRƯỢT (âm lượng) — DESIGN §8.3 "âm lượng 60%"
+   ========================================================================== */
+.row--slider { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-2); cursor: default; }
+.row--slider .row__label { display: flex; align-items: center; justify-content: space-between; }
+.row__value { font-size: var(--fs-sm); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: var(--tap-min);
+  background: transparent;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -9px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  border: 2px solid var(--surface-1);
+  box-shadow: var(--shadow-1);
+}
+.slider::-moz-range-track { height: 4px; border-radius: var(--radius-full); background: var(--surface-2); border: 1px solid var(--border); }
+.slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: var(--radius-full); background: var(--accent); border: 2px solid var(--surface-1); }
+.slider:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }

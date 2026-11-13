@@ -1,0 +1,689 @@
+{
+  "label": "before",
+  "when": "2026-11-13T17:00:59.888Z",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "base": "http://127.0.0.1:8801/index.html",
+  "bundle": "http://127.0.0.1:8801/bundle.html",
+  "node": "v26.4.0",
+  "results": {
+    "perf": {
+      "fpsAnimating8x8": {
+        "ms": 2001,
+        "frames": 120,
+        "fps": 60,
+        "avgFrameMs": 16.67,
+        "p95FrameMs": 16.8,
+        "worstFrameMs": 16.8,
+        "framesOver33ms": 0,
+        "moves": 16
+      },
+      "rafDuringAnim1200ms": {
+        "calls": 12,
+        "perSecond": 10
+      },
+      "rafWhenIdle3s": {
+        "rafCount": 0,
+        "rafByApp": 0,
+        "ms": 3001
+      },
+      "rafWhenIdleMenu2s": {
+        "rafCount": 0,
+        "rafByApp": 0
+      },
+      "chooseMove8x8": {
+        "n": 339,
+        "avgMs": 1.12,
+        "p95Ms": 8.8,
+        "maxMs": 26.1,
+        "byLevel": {
+          "easy": {
+            "n": 113,
+            "avgMs": 0.14,
+            "p95Ms": 0.3,
+            "maxMs": 2
+          },
+          "medium": {
+            "n": 113,
+            "avgMs": 0.15,
+            "p95Ms": 0.6,
+            "maxMs": 2.1
+          },
+          "hard": {
+            "n": 113,
+            "avgMs": 3.07,
+            "p95Ms": 15.5,
+            "maxMs": 26.1
+          }
+        },
+        "note": "mỗi mức chơi trọn 1 ván 8×8 bằng chính AI của app"
+      },
+      "heap60s": {
+        "ms": 60007,
+        "samples": 42,
+        "heapStartMB": 3.9,
+        "heapEndMB": 3.8,
+        "heapMinMB": 2.1,
+        "heapMaxMB": 4.9,
+        "nodeStart": 230,
+        "nodeEnd": 265,
+        "nodeMin": 230,
+        "nodeMax": 340
+      },
+      "cdpMetrics": {
+        "JSHeapUsedSizeMB": 3.76,
+        "Nodes": 658,
+        "JSEventListeners": 299,
+        "Documents": 1,
+        "LayoutObjects": 305
+      },
+      "load": {
+        "index": {
+          "url": "http://127.0.0.1:8801/index.html",
+          "fileBytes": 5585,
+          "domContentLoadedMs": 24.8,
+          "loadMs": 25.3,
+          "responseEndMs": 16.5,
+          "transferSize": 0,
+          "resourceCount": 11,
+          "resourceBytes": 0,
+          "domNodes": 230,
+          "scripts": 4
+        },
+        "bundle": {
+          "url": "http://127.0.0.1:8801/bundle.html",
+          "fileBytes": 247369,
+          "domContentLoadedMs": 17.9,
+          "loadMs": 18.2,
+          "responseEndMs": 10.4,
+          "transferSize": 247669,
+          "resourceCount": 0,
+          "resourceBytes": 0,
+          "domNodes": 227,
+          "scripts": 2
+        }
+      }
+    },
+    "compat": [
+      {
+        "viewport": "320x568",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "296x296",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1680,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "360x640",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "328x328",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1640,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "390x844",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "358x358",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1610,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "430x932",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "398x398",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1570,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "768x1024",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "560x560",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1232,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "667x375-landscape",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "165x165",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1333,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "1280x800",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "150x150",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 720,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "390x844-zoom200",
+        "boardMenu": null,
+        "reducedMotion": false,
+        "zoom": 2,
+        "overflowX": 0,
+        "boardInside": false,
+        "boardSize": "652x652",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1805,
+          "appOverflowX": 66,
+          "appScrollableX": true
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      },
+      {
+        "viewport": "390x844-reduced-motion",
+        "boardMenu": null,
+        "reducedMotion": true,
+        "zoom": 1,
+        "overflowX": 0,
+        "boardInside": true,
+        "boardSize": "358x358",
+        "smallButtons": 0,
+        "syncMoves": {
+          "requested": 6,
+          "applied": 6,
+          "moveCountAfterLoop": 6,
+          "remaining": 34
+        },
+        "syncMovesAfterSettle": 6,
+        "scrollCompat": {
+          "docOverflowX": 0,
+          "bodyOverflowX": 1610,
+          "appOverflowX": 0,
+          "appScrollableX": false
+        },
+        "smallButtonSample": [],
+        "buttonsChecked": 10,
+        "errors": []
+      }
+    ],
+    "leaks": {
+      "cycles": 30,
+      "cycleScreens": [
+        "menu"
+      ],
+      "screenAfter": "menu(no game)",
+      "baseline": {
+        "JSHeapUsedSizeMB": 2.61,
+        "JSEventListeners": 352,
+        "Nodes": 1635,
+        "LayoutObjects": 264,
+        "Documents": 4
+      },
+      "after": {
+        "JSHeapUsedSizeMB": 2.9,
+        "JSEventListeners": 352,
+        "Nodes": 1639,
+        "LayoutObjects": 265,
+        "Documents": 4
+      },
+      "deltaListeners": 0,
+      "deltaNodes": 4,
+      "deltaHeapMB": 0.29
+    },
+    "robust": [
+      {
+        "case": "baseline",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "localStorage-blocked",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "crypto-getRandomValues-missing",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "navigator-vibrate-missing",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "ctx.roundRect-missing",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "ResizeObserver-missing",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "AudioContext-throws",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      },
+      {
+        "case": "AudioContext-suspended",
+        "bootOk": true,
+        "hook": true,
+        "played": true,
+        "threw": null,
+        "errors": 0,
+        "errorSample": []
+      }
+    ],
+    "edge": {
+      "timeoutVsAi": {
+        "seconds": 12.5,
+        "finalMoves": 2,
+        "finalTurn": "A",
+        "over": false,
+        "moveJumps": [
+          1,
+          1
+        ],
+        "maxJump": 1,
+        "errors": 0
+      },
+      "themeDuringAnim": {
+        "moveCount": 12,
+        "theme": "light",
+        "boardW": 358,
+        "errors": [],
+        "afterSettle": {
+          "canvasW": 716,
+          "centerPixel": [
+            71,
+            85,
+            105,
+            255
+          ],
+          "errors": 0
+        }
+      },
+      "resizeDuringAnim": {
+        "boardW": 358,
+        "boardH": 358,
+        "overflowX": 0,
+        "errors": 0
+      },
+      "hiddenTab": {
+        "frozenMs": 2000,
+        "movesAfter": 0,
+        "over": false,
+        "errors": 0
+      },
+      "fullBoardWithTimer": {
+        "moves": 12,
+        "over": true,
+        "score": {
+          "A": 9,
+          "B": 0,
+          "total": 9
+        },
+        "remaining": 0,
+        "clockVisible": true,
+        "errors": 0
+      },
+      "newGameX5": {
+        "clicks": 5,
+        "modalsSeen": 5,
+        "screen": "play",
+        "moveCount": 0,
+        "over": false,
+        "errors": 0
+      },
+      "modalPausesClockRules": {
+        "modalOpen": true,
+        "atOpen": "0:10",
+        "twoSecLater": "0:10",
+        "paused": true,
+        "resumedAfterClose": true,
+        "clockAfterClose": "0:12",
+        "over": false,
+        "errors": 0
+      },
+      "modalPausesClockSettings": {
+        "modalOpen": true,
+        "atOpen": "0:10",
+        "twoSecLater": "0:10",
+        "paused": true,
+        "resumedAfterClose": true,
+        "clockAfterClose": "0:12",
+        "over": false,
+        "errors": 0
+      },
+      "keysInMenu": {
+        "screenBefore": "menu",
+        "moveCountBefore": null,
+        "screenAfter": "menu",
+        "moveCountAfter": null,
+        "activeElement": "BODY",
+        "errors": 0
+      },
+      "keysInModal": {
+        "movesBefore": 0,
+        "movesAfter": 0,
+        "keysDidNotMove": true,
+        "focusTrapped": true,
+        "errors": 0
+      },
+      "reducedMotion": {
+        "reduced": true,
+        "rafAfterMoves": 0,
+        "errors": 0
+      }
+    }
+  },
+  "consoleErrors": [
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    },
+    {
+      "type": "log.warning",
+      "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+      "url": "http://127.0.0.1:8801/src/audio.js"
+    }
+  ],
+  "meta": {
+    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+  },
+  "consoleErrorCount": 28
+}

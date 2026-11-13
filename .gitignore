@@ -1,0 +1,20 @@
+# Hệ điều hành
+.DS_Store
+
+# Ảnh kiểm thử tự động (không cần đưa lên site)
+screenshots-qc/
+screenshots-qc-bundle/
+screenshots-maint/
+screenshots-maint-bundle/
+
+# Thư mục phụ thuộc (dự án không dùng dependency, chừa chỗ nếu thêm Capacitor ở giai đoạn 2)
+node_modules/
+
+# Log tạm
+*.log
+
+# Ảnh & log kiểm thử của các agent (chỉ cần trên máy, không đưa lên site)
+screenshots-final/
+qc/shot*/
+qc/out/
+*.json.tmp

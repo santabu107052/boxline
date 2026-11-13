@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Boxline — Cờ Ô Vuông</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Boxline (Cờ Ô Vuông) — game Dots &amp; Boxes chơi offline, có máy 3 độ khó, chế độ 2 người, hướng dẫn cho người mới.">
+  <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0B0E13" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Boxline">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="src/styles.css">
+  <script>
+    /* Ghim theme TRƯỚC khi vẽ để không "nháy" sáng/tối.
+       Nguồn sự thật vẫn là cài đặt trong src/config.js (localStorage). */
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        var t = q.get('theme');
+        if (t !== 'light' && t !== 'dark') {
+          var raw = localStorage.getItem('db_settings');
+          var saved = raw ? JSON.parse(raw) : null;
+          t = saved && saved.theme ? saved.theme : 'system';
+        }
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* localStorage bị chặn → dùng theo hệ thống */ }
+    })();
+  </script>
+</head>
+<body>
+  <noscript>
+    <div style="max-width:560px;margin:24px auto;padding:20px;font-family:system-ui,sans-serif;line-height:1.6">
+      <h1 style="font-size:24px;margin:0 0 12px">Cần bật JavaScript</h1>
+      <p>Boxline cần JavaScript để chạy. Bạn hãy bật JavaScript trong trình duyệt rồi tải lại trang.</p>
+    </div>
+  </noscript>
+
+  <main class="app" id="app">
+    <!-- Màn hình (menu / bàn chơi / hướng dẫn nhanh / kết quả) được dựng bằng src/ui.js
+         và gắn vào đây để bố cục đúng thứ tự. Không viết DOM thừa ở đây để tránh lệch. -->
+  </main>
+
+  <button type="button" class="sound-chip" id="sound-chip" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" class="icon"><path d="M4 9v6h3l5 4V5L7 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+    <span>Chạm để bật âm thanh</span>
+  </button>
+
+  <!-- Khung chừa quảng cáo: LUÔN chiếm --ad-reserve để layout không nhảy (CLS = 0). -->
+  <div id="ad-slot" aria-hidden="true"></div>
+
+  <pre id="selftest" hidden></pre>
+
+  <!-- Thông báo khi mở bằng file:// mà trình duyệt chặn ES module. -->
+  <div class="gate" id="file-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="gate__panel">
+      <h1 class="gate__title" id="gate-title">Trình duyệt chặn mô-đun khi mở từ file</h1>
+      <p>Bạn đang mở tệp <code>index.html</code> trực tiếp bằng đường dẫn <code>file://</code>.
+         Vì lý do bảo mật, một số trình duyệt không cho phép tải mô-đun JavaScript theo cách này.</p>
+      <p><strong>Cách 1 — chạy một máy chủ nhỏ trong thư mục dự án:</strong></p>
+      <pre>./serve.sh
+# rồi mở http://127.0.0.1:8765/</pre>
+      <p><strong>Cách 2 — nếu không có <code>serve.sh</code>:</strong></p>
+      <pre>python3 -m http.server 8765 --bind 127.0.0.1</pre>
+      <p><strong>Cách 3 — dùng bản gói một tệp (mở được bằng cách bấm đúp):</strong>
+         chạy <code>node build-bundle.mjs</code> rồi mở tệp <code>bundle.html</code>.</p>
+    </div>
+  </div>
+
+  <script>
+    /* Nếu main.js không nạp được (module bị chặn / 404) thì hiện hướng dẫn thay vì trang trắng.
+       Điều kiện: sau 2.5s mà module CHƯA được đánh giá xong trong khi HTML đã tải xong. */
+    (function () {
+      window.__moduleLoaded = false;
+      function showGate() {
+        if (window.__moduleLoaded || window.__bootOk) return;
+        var gate = document.getElementById('file-gate');
+        if (gate) gate.classList.add('is-visible');
+      }
+      window.addEventListener('load', function () { setTimeout(showGate, 2500); });
+      setTimeout(showGate, 6000); // dự phòng nếu sự kiện load không bắn
+    })();
+  </script>
+
+  <script type="module">
+    // Đánh dấu NGAY khi module bắt đầu chạy: từ đây trình duyệt đã nạp được ES module.
+    window.__moduleLoaded = true;
+    import('./src/main.js')
+      .then(function (main) { window.__main = main; })
+      .catch(function (err) {
+        window.__moduleLoaded = false;
+        var gate = document.getElementById('file-gate');
+        if (gate) gate.classList.add('is-visible');
+        console.error('Không nạp được main.js', err);
+      });
+  </script>
+
+  <script>
+    /* Đăng ký service worker CHỈ khi giao thức là http/https (file:// không hỗ trợ). */
+    if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+          console.error('Service worker đăng ký thất bại', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
