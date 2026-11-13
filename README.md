@@ -11,6 +11,12 @@ bằng Canvas 2D. Chạy **offline 100%**, không thư viện ngoài, không CDN
 | `short_name` | `Boxline` |
 | Bundle id dự kiến (mobile) | `com.santabu.boxline` |
 
+## 0. Chơi ngay trên web (đã phát hành)
+
+- 🎮 **https://santabu107052.github.io/boxline/** — bản demo, mở được trên điện thoại và máy tính.
+- 🧩 Bản một tệp: **https://santabu107052.github.io/boxline/bundle.html** (mở trực tiếp, không cần máy chủ).
+- 📦 Mã nguồn: **https://github.com/santabu107052/boxline**
+
 ## 1. Cách chạy (chọn 1 trong 3)
 
 ### Cách 1 — Mở `bundle.html` (không cần máy chủ)
