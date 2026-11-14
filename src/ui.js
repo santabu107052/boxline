@@ -188,9 +188,9 @@ export function createUI(deps = {}) {
    * Dựng segmented control (role=radiogroup, aria-checked; bàn phím ←/→).
    * @returns {{el:HTMLElement, setValue:Function, getValue:Function, setDisabled:Function}}
    */
-  function segmented({ name, options, value, onChange, extraClass = '', labels = null, id = null }) {
+  function segmented({ name, options, value, onChange, extraClass = '', labels = null, id = null, wrap = false }) {
     const group = h('div', {
-      class: `segmented ${extraClass}`.trim(),
+      class: `segmented ${extraClass}${wrap ? ' segmented--grid' : ''}`.trim(),
       role: 'radiogroup',
       id: id || undefined,
       'aria-label': name,
@@ -340,6 +340,7 @@ export function createUI(deps = {}) {
     labels: Object.fromEntries(BOARD_SIZES.map((n) => [n, `${n}×${n}`])),
     value: settings.boardSize || 5,
     extraClass: 'segmented--sizes',
+    wrap: true,
     onChange: (v) => emit('change', { boardSize: v }),
   });
   const diffSeg = segmented({
@@ -422,9 +423,17 @@ export function createUI(deps = {}) {
   }, [icon(settings.sound !== false ? 'volumeOn' : 'volumeOff', 20), h('span', { text: settings.sound !== false ? 'Âm thanh: Bật' : 'Âm thanh: Tắt' })]);
 
   const guideBtn = h('button', { type: 'button', class: 'chip', id: 'btn-guide' }, [icon('book', 20), h('span', { text: 'Hướng dẫn' })]);
+
+  /* Thanh "Chơi ngay" ghim đáy menu.
+     Lý do (lỗi người dùng báo 14/11): danh sách tuỳ chọn dài hơn màn hình nên "Độ khó" — và trước
+     đây cả nút "Chơi nhanh" — nằm ngoài khung nhìn, phải tự cuộn mới thấy, nhiều người tưởng game
+     không có mục độ khó. Nút chơi + tóm tắt lựa chọn hiện tại luôn ghim dưới đáy, chỉ phần danh
+     sách tuỳ chọn ở giữa mới cuộn. */
   const quickBtn = h('button', { type: 'button', class: 'btn btn--primary btn--block', id: 'btn-quick' }, [
     icon('play', 20), h('span', { text: 'Chơi nhanh' }),
   ]);
+  const summaryLine = h('p', { class: 'menu-dock__summary', id: 'menu-summary', 'aria-live': 'polite' });
+  const menuDock = h('div', { class: 'menu-dock' }, [summaryLine, quickBtn]);
   quickBtn.addEventListener('click', () => emit('startGame'));
   guideBtn.addEventListener('click', () => emit('quickGuide'));
 
@@ -434,29 +443,42 @@ export function createUI(deps = {}) {
     settingsIconBtn,
   ]);
   const menu = h('div', { class: 'menu' }, [
+      // Hai lối tắt này đặt TRÊN danh sách tuỳ chọn để luôn thấy mà không phải cuộn.
+      h('div', { class: 'menu__shortcuts' }, [guideBtn, soundBtn]),
       h('header', { class: 'brand' }, [
         h('h1', { class: 'brand__name', text: APP_NAME }),
         h('p', { class: 'brand__sub', text: APP_SUBTITLE }),
       ]),
-      h('div', { class: 'menu__actions' }, [
-        quickBtn,
-        h('div', { class: 'segmented-row' }, [modeSeg.el]),
-      ]),
-      sizeField,
+      // Thứ tự theo mức quan trọng: chế độ → độ khó (chỉ có ở chế độ với máy) → bàn → ai đi trước → thời gian.
+      h('div', { class: 'menu__actions' }, [modeSeg.el]),
       diffField,
+      sizeField,
       firstField,
       h('fieldset', { class: 'fieldset' }, [timeToggle.el, timePicker]),
-    h('div', { class: 'menu__footer' }, [
-      guideBtn,
-      soundBtn,
-    ]),
   ]);
   const menuScreen = h('section', { class: 'screen screen--menu', id: 'screen-menu', 'aria-label': 'Màn hình chính' }, [
     menuHeader,
     menu,
+    menuDock,
   ]);
   syncMenuVisibility(modeSeg.getValue());
   syncTimePicker(timeToggle.get());
+  updateMenuSummary();
+
+  /** Cập nhật dòng tóm tắt trên thanh "Chơi ngay" (để người chơi biết mình đang chọn gì). */
+  function updateMenuSummary(vals = null) {
+    const v = vals || {
+      mode: modeSeg.getValue(),
+      boardSize: sizeSeg.getValue(),
+      difficulty: diffSeg.getValue(),
+      timeLimitOn: timeToggle.get(),
+      timeLimitSec: Number(timeSeg.getValue()),
+    };
+    const parts = [v.mode === 'pvp' ? '2 người' : `Máy · ${DIFFICULTY_LABELS[v.difficulty] || ''}`.trim()];
+    parts.push(`bàn ${v.boardSize}×${v.boardSize}`);
+    parts.push(v.timeLimitOn ? `${v.timeLimitSec} giây/lượt` : 'không giới hạn thời gian');
+    summaryLine.textContent = parts.join(' · ');
+  }
 
 
   themeIconBtn.addEventListener('click', () => emit('cycleTheme'));
@@ -1056,6 +1078,7 @@ export function createUI(deps = {}) {
     timeToggle.set(settings.timeLimitOn);
     timeSeg.setValue(settings.timeLimitSec);
     syncTimePicker(settings.timeLimitOn);
+    updateMenuSummary(settings);
     syncThemeButton(settings.theme);
     syncSoundButton(settings.sound);
     syncMenuVisibility(settings.mode);
@@ -1289,6 +1312,7 @@ export function createUI(deps = {}) {
     setModeValue: (m) => { modeSeg.setValue(m); syncMenuVisibility(m); setFirstLabels(m); },
     setSizeDisabled: (flag) => sizeSeg.setDisabled(flag),
     getModeValue: () => modeSeg.getValue(),
+    updateMenuSummary,
     elements: {
       menu: menuScreen,
       play: playScreen,

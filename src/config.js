@@ -11,7 +11,9 @@ export const APP_BUNDLE_ID = 'com.santabu.boxline';
 export const APP_VERSION = '1.0.0';
 
 /** Kích thước bàn cho phép (đơn vị ô vuông). */
-export const BOARD_SIZES = [3, 4, 5, 6, 7, 8];
+/* 3×3 … 12×12. Giới hạn 12 để cạnh vẫn bấm được trên điện thoại hẹp nhất (320px):
+   12 ô trong khung ~288px → bước lưới 24px, vùng bắt cạnh tối thiểu 28px phủ trọn một cạnh. */
+export const BOARD_SIZES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /** Độ khó AI. */
 export const DIFFICULTIES = ['easy', 'medium', 'hard'];

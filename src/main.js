@@ -657,8 +657,11 @@ function boot() {
         globalThis.setTimeout(() => audio.play('tock', k), reduced() ? 0 : 60 * (k - 1));
       }
     }
-    if (closedCount >= 2) ui.showComboBadge(`Chuỗi ×${closedCount}`);
-    else if (res.keepsTurn) ui.showComboBadge('Được đi tiếp');
+    // Thông báo "giữ lượt" phải nằm NGOÀI bàn cờ: nếu đặt giữa bàn sẽ che ô/cạnh người chơi
+    // vừa tô đúng lúc cần nhìn nhất. Vì vậy dùng toast nổi ở đáy màn hình (trên thanh hành động);
+    // từ chuỗi 2 ô trở lên mới hiện badge ngắn gọn "×N" trong bàn.
+    if (closedCount >= 2) ui.showComboBadge(`×${closedCount}`);
+    else if (res.keepsTurn) ui.showToast('Kín ô — bạn được đi tiếp', { ms: 1500 });
     haptic(res);
     hoverEdge = null;
     const sc = score(game);
@@ -1641,6 +1644,11 @@ function boot() {
       tutorial.touchedControl = false;
       beginStep(id);
       return { ok: true, state: snapshot() };
+    },
+    /** Chỉ dùng cho test: về menu ngay (không qua hộp xác nhận). */
+    showMenu() {
+      goMenu();
+      return snapshot();
     },
     getState: () => snapshot(),
     setTheme(t) {

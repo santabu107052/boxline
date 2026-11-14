@@ -1,0 +1,403 @@
+{
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "port": 9883,
+  "results": [
+    {
+      "name": "r01-menu-light-390",
+      "url": "?theme=light",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r02-menu-dark-390",
+      "url": "?theme=dark",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r03-menu-light-320",
+      "url": "?theme=light",
+      "viewport": "320x568",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r04-menu-light-landscape",
+      "url": "?theme=light",
+      "viewport": "667x375",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r05-menu-dark-desktop",
+      "url": "?theme=dark",
+      "viewport": "1280x800",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r06-play-light-5x5",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r07-play-dark-8x8",
+      "url": "?theme=dark&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r08-play-light-3x3-finish",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": " [playAll=DONE]",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r09-result-light",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": " [playAll=DONE]",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r10-result-dark",
+      "url": "?theme=dark&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": " [playAll=DONE]",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r11-guide-light",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r12-tutorial-step2-dark",
+      "url": "?theme=dark&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r13-tutorial-decoy-light",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r14-settings-dark-desktop",
+      "url": "?theme=dark&debug=1",
+      "viewport": "1280x800",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r15-rules-light",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r16-zoom200-menu-dark",
+      "url": "?theme=dark",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r17-menu-sizes-320",
+      "url": "?theme=light",
+      "viewport": "320x568",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r17b-menu-sizes-390",
+      "url": "?theme=light",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r17c-menu-sizes-320-scrolled",
+      "url": "?theme=light",
+      "viewport": "320x568",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "",
+          ""
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r18-play-12x12-dark",
+      "url": "?theme=dark&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#0B0E13"
+      }
+    },
+    {
+      "name": "r19-play-12x12-320",
+      "url": "?theme=light&debug=1",
+      "viewport": "320x568",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "296px",
+          "296px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    },
+    {
+      "name": "r20-keepsturn-toast",
+      "url": "?theme=light&debug=1",
+      "viewport": "390x844",
+      "ok": true,
+      "note": "",
+      "probe": {
+        "errors": [],
+        "overflowX": 0,
+        "title": "Boxline — Cờ Ô Vuông",
+        "canvas": [
+          "358px",
+          "358px"
+        ],
+        "reduced": false,
+        "themeBg": "#F7F8FA"
+      }
+    }
+  ],
+  "errors": []
+}

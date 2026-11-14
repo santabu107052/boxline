@@ -508,6 +508,18 @@ Không được giả định người đọc biết bất cứ từ nào dướ
 
 ---
 
+## 8b. Ghi chú thay đổi sau khi người dùng chơi thử (14/11)
+
+Người dùng kiểm thử bản web (https://santabu107052.github.io/boxline/) và báo: app đi thẳng vào bàn chơi
+sau khi đóng hướng dẫn nhanh, nên **không thấy được màn menu có mục "Độ khó"**. Đã sửa (không đổi nội dung
+bài học ở trên):
+
+- Từ màn "Hướng dẫn nhanh": nút **Bỏ qua** và nút **đóng (×)** chỉ đóng hướng dẫn và **về menu** (không
+  vào thẳng ván). Chỉ nút **"Chơi thử Tutorial"** và nút "Bắt đầu" của tutorial mới mở bàn chơi.
+- Từ ván đang chơi: nút **quay lại** luôn hỏi "Về menu?" trước khi huỷ ván.
+- Menu được sắp lại theo mức quan trọng: chế độ (Chơi với máy / 2 người) → **Độ khó** → Kích thước bàn →
+  Ai đi trước → Thời gian; thanh "Chơi nhanh" ghim đáy nên không bao giờ khuất.
+
 ## 9. Checklist cho Dev
 
 ### Trải nghiệm tối thiểu

@@ -173,7 +173,12 @@ html, body {
 body {
   min-height: 100dvh;
   overscroll-behavior-y: none;
+  /* Chọn chữ chỉ trong đoạn văn/modal — không bôi xanh khi người dùng kéo cuộn danh sách cài đặt
+     (trước đây kéo chuột trên menu làm "bôi đen" chữ thay vì cuộn, trông như game bị treo). */
+  -webkit-user-select: none;
+  user-select: none;
 }
+p, span, li, dd, dt, pre, code, input, textarea, .modal__panel { -webkit-user-select: text; user-select: text; }
 
 button { font-family: inherit; color: inherit; }
 
@@ -323,14 +328,6 @@ button { font-family: inherit; color: inherit; }
 /* ==========================================================================
    MENU
    ========================================================================== */
-.menu {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: var(--space-4);
-  -webkit-overflow-scrolling: touch;
-}
 .brand { text-align: center; padding-block: var(--space-3) var(--space-5); }
 /* Màn Hướng dẫn nhanh: .menu KHÔNG tự cuộn (khối .guide__scroll bên trong cuộn) để khối nút
    dính đáy luôn hiện, kể cả trên desktop 1280×800. */
@@ -367,6 +364,48 @@ button { font-family: inherit; color: inherit; }
   color: var(--text-secondary);
 }
 .fieldset__hint { font-size: var(--fs-xs); color: var(--text-muted); margin: var(--space-2) 0 0; }
+
+/* Hai lối tắt trên cùng màn menu (Hướng dẫn, Âm thanh) — luôn thấy, không phải cuộn. */
+.menu__shortcuts {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.menu__shortcuts .chip { flex: 1 1 0; justify-content: center; min-width: 0; }
+
+/* Thanh "Chơi ngay" ghim đáy màn menu: danh sách tuỳ chọn cuộn bên trong, nút chơi + tóm tắt
+   lựa chọn hiện tại luôn hiện (sửa lỗi "không thấy mục chọn độ khó" — 14/11). */
+.menu-dock {
+  flex: 0 0 auto;
+  display: grid;
+  gap: var(--space-1);
+  padding-block: var(--space-2) var(--space-1);
+  background: var(--surface-0);
+  box-shadow: 0 -1px 0 var(--hairline);
+}
+/* Chip "Âm thanh: Bật" ở 320px xuống 2 dòng làm hàng cao vống lên → cắt 1 dòng. */
+.menu__shortcuts .chip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.menu-dock__summary {
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.menu {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: var(--space-4);
+  -webkit-overflow-scrolling: touch;
+  /* Hiệu ứng mờ dần ở mép dưới báo "còn tuỳ chọn bên dưới" — không dùng gradient màu rực (§1.2). */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+}
 
 .menu__footer {
   display: flex;
@@ -411,6 +450,16 @@ button { font-family: inherit; color: inherit; }
   border: 1px solid transparent;
 }
 .segmented--sizes .segmented__seg { flex: 1 1 28%; }
+/* Kích thước bàn có 10 lựa chọn (3×3 … 12×12) → xếp thành lưới 5 cột, 2 hàng đều nhau.
+   Mỗi đoạn luôn ≥ 44×44 (lưới sẽ tràn sang hàng mới thay vì bóp nhỏ khi màn hình 320px).
+   @supports: trình duyệt cũ rơi về flex-wrap như trước, không vỡ. */
+@supports (display: grid) {
+  .segmented--grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(var(--tap-min), 1fr));
+  }
+  .segmented--grid .segmented__seg { flex: none; width: 100%; }
+}
 .segmented__seg {
   flex: 1 1 auto;
   /* Vùng chạm thật ≥ 44×44 ở cả chiều rộng (DESIGN §4.4). Trước đây chỉ có min-height nên ở
@@ -649,13 +698,15 @@ button { font-family: inherit; color: inherit; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1);
-  padding: var(--space-2) var(--space-4);
+  padding: 2px var(--space-2);
   border-radius: var(--radius-full);
+  /* Nhạt hơn badge cũ: chỉ là nhắc "chuỗi", không được che bàn như một tấm chắn. */
   background: var(--toast-bg);
   color: var(--toast-text);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: 600;
-  box-shadow: var(--shadow-2);
+  line-height: 1.4;
+  box-shadow: var(--shadow-1);
   pointer-events: none;
   opacity: 0;
   z-index: 3;
@@ -1367,7 +1418,9 @@ const APP_BUNDLE_ID = 'com.santabu.boxline';
 const APP_VERSION = '1.0.0';
 
 /** Kích thước bàn cho phép (đơn vị ô vuông). */
-const BOARD_SIZES = [3, 4, 5, 6, 7, 8];
+/* 3×3 … 12×12. Giới hạn 12 để cạnh vẫn bấm được trên điện thoại hẹp nhất (320px):
+   12 ô trong khung ~288px → bước lưới 24px, vùng bắt cạnh tối thiểu 28px phủ trọn một cạnh. */
+const BOARD_SIZES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /** Độ khó AI. */
 const DIFFICULTIES = ['easy', 'medium', 'hard'];
@@ -4329,9 +4382,9 @@ function createUI(deps = {}) {
    * Dựng segmented control (role=radiogroup, aria-checked; bàn phím ←/→).
    * @returns {{el:HTMLElement, setValue:Function, getValue:Function, setDisabled:Function}}
    */
-  function segmented({ name, options, value, onChange, extraClass = '', labels = null, id = null }) {
+  function segmented({ name, options, value, onChange, extraClass = '', labels = null, id = null, wrap = false }) {
     const group = h('div', {
-      class: `segmented ${extraClass}`.trim(),
+      class: `segmented ${extraClass}${wrap ? ' segmented--grid' : ''}`.trim(),
       role: 'radiogroup',
       id: id || undefined,
       'aria-label': name,
@@ -4481,6 +4534,7 @@ function createUI(deps = {}) {
     labels: Object.fromEntries(BOARD_SIZES.map((n) => [n, `${n}×${n}`])),
     value: settings.boardSize || 5,
     extraClass: 'segmented--sizes',
+    wrap: true,
     onChange: (v) => emit('change', { boardSize: v }),
   });
   const diffSeg = segmented({
@@ -4563,9 +4617,17 @@ function createUI(deps = {}) {
   }, [icon(settings.sound !== false ? 'volumeOn' : 'volumeOff', 20), h('span', { text: settings.sound !== false ? 'Âm thanh: Bật' : 'Âm thanh: Tắt' })]);
 
   const guideBtn = h('button', { type: 'button', class: 'chip', id: 'btn-guide' }, [icon('book', 20), h('span', { text: 'Hướng dẫn' })]);
+
+  /* Thanh "Chơi ngay" ghim đáy menu.
+     Lý do (lỗi người dùng báo 14/11): danh sách tuỳ chọn dài hơn màn hình nên "Độ khó" — và trước
+     đây cả nút "Chơi nhanh" — nằm ngoài khung nhìn, phải tự cuộn mới thấy, nhiều người tưởng game
+     không có mục độ khó. Nút chơi + tóm tắt lựa chọn hiện tại luôn ghim dưới đáy, chỉ phần danh
+     sách tuỳ chọn ở giữa mới cuộn. */
   const quickBtn = h('button', { type: 'button', class: 'btn btn--primary btn--block', id: 'btn-quick' }, [
     icon('play', 20), h('span', { text: 'Chơi nhanh' }),
   ]);
+  const summaryLine = h('p', { class: 'menu-dock__summary', id: 'menu-summary', 'aria-live': 'polite' });
+  const menuDock = h('div', { class: 'menu-dock' }, [summaryLine, quickBtn]);
   quickBtn.addEventListener('click', () => emit('startGame'));
   guideBtn.addEventListener('click', () => emit('quickGuide'));
 
@@ -4575,29 +4637,42 @@ function createUI(deps = {}) {
     settingsIconBtn,
   ]);
   const menu = h('div', { class: 'menu' }, [
+      // Hai lối tắt này đặt TRÊN danh sách tuỳ chọn để luôn thấy mà không phải cuộn.
+      h('div', { class: 'menu__shortcuts' }, [guideBtn, soundBtn]),
       h('header', { class: 'brand' }, [
         h('h1', { class: 'brand__name', text: APP_NAME }),
         h('p', { class: 'brand__sub', text: APP_SUBTITLE }),
       ]),
-      h('div', { class: 'menu__actions' }, [
-        quickBtn,
-        h('div', { class: 'segmented-row' }, [modeSeg.el]),
-      ]),
-      sizeField,
+      // Thứ tự theo mức quan trọng: chế độ → độ khó (chỉ có ở chế độ với máy) → bàn → ai đi trước → thời gian.
+      h('div', { class: 'menu__actions' }, [modeSeg.el]),
       diffField,
+      sizeField,
       firstField,
       h('fieldset', { class: 'fieldset' }, [timeToggle.el, timePicker]),
-    h('div', { class: 'menu__footer' }, [
-      guideBtn,
-      soundBtn,
-    ]),
   ]);
   const menuScreen = h('section', { class: 'screen screen--menu', id: 'screen-menu', 'aria-label': 'Màn hình chính' }, [
     menuHeader,
     menu,
+    menuDock,
   ]);
   syncMenuVisibility(modeSeg.getValue());
   syncTimePicker(timeToggle.get());
+  updateMenuSummary();
+
+  /** Cập nhật dòng tóm tắt trên thanh "Chơi ngay" (để người chơi biết mình đang chọn gì). */
+  function updateMenuSummary(vals = null) {
+    const v = vals || {
+      mode: modeSeg.getValue(),
+      boardSize: sizeSeg.getValue(),
+      difficulty: diffSeg.getValue(),
+      timeLimitOn: timeToggle.get(),
+      timeLimitSec: Number(timeSeg.getValue()),
+    };
+    const parts = [v.mode === 'pvp' ? '2 người' : `Máy · ${DIFFICULTY_LABELS[v.difficulty] || ''}`.trim()];
+    parts.push(`bàn ${v.boardSize}×${v.boardSize}`);
+    parts.push(v.timeLimitOn ? `${v.timeLimitSec} giây/lượt` : 'không giới hạn thời gian');
+    summaryLine.textContent = parts.join(' · ');
+  }
 
 
   themeIconBtn.addEventListener('click', () => emit('cycleTheme'));
@@ -5197,6 +5272,7 @@ function createUI(deps = {}) {
     timeToggle.set(settings.timeLimitOn);
     timeSeg.setValue(settings.timeLimitSec);
     syncTimePicker(settings.timeLimitOn);
+    updateMenuSummary(settings);
     syncThemeButton(settings.theme);
     syncSoundButton(settings.sound);
     syncMenuVisibility(settings.mode);
@@ -5430,6 +5506,7 @@ function createUI(deps = {}) {
     setModeValue: (m) => { modeSeg.setValue(m); syncMenuVisibility(m); setFirstLabels(m); },
     setSizeDisabled: (flag) => sizeSeg.setDisabled(flag),
     getModeValue: () => modeSeg.getValue(),
+    updateMenuSummary,
     elements: {
       menu: menuScreen,
       play: playScreen,
@@ -6220,8 +6297,11 @@ function boot() {
         globalThis.setTimeout(() => audio.play('tock', k), reduced() ? 0 : 60 * (k - 1));
       }
     }
-    if (closedCount >= 2) ui.showComboBadge(`Chuỗi ×${closedCount}`);
-    else if (res.keepsTurn) ui.showComboBadge('Được đi tiếp');
+    // Thông báo "giữ lượt" phải nằm NGOÀI bàn cờ: nếu đặt giữa bàn sẽ che ô/cạnh người chơi
+    // vừa tô đúng lúc cần nhìn nhất. Vì vậy dùng toast nổi ở đáy màn hình (trên thanh hành động);
+    // từ chuỗi 2 ô trở lên mới hiện badge ngắn gọn "×N" trong bàn.
+    if (closedCount >= 2) ui.showComboBadge(`×${closedCount}`);
+    else if (res.keepsTurn) ui.showToast('Kín ô — bạn được đi tiếp', { ms: 1500 });
     haptic(res);
     hoverEdge = null;
     const sc = score(game);
@@ -7204,6 +7284,11 @@ function boot() {
       tutorial.touchedControl = false;
       beginStep(id);
       return { ok: true, state: snapshot() };
+    },
+    /** Chỉ dùng cho test: về menu ngay (không qua hộp xác nhận). */
+    showMenu() {
+      goMenu();
+      return snapshot();
     },
     getState: () => snapshot(),
     setTheme(t) {
