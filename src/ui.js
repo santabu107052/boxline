@@ -598,6 +598,14 @@ export function createUI(deps = {}) {
     actionBar,
   ]);
 
+  // Vùng bố cục rõ ràng cho màn chơi (màn hẹp: 1 cột; màn rộng ≥1024px: bàn sang cột phải —
+  // xem src/board-layout.css). Không khai báo thì khung bàn rơi vào cột HUD và bị ép nhỏ (lỗi 14/11).
+  playHeader.classList.add('play__head');
+  hud.classList.add('play__hud');
+  tutBar.classList.add('play__tut');
+  boardWrap.classList.add('play__board');
+  actionBar.classList.add('play__actions');
+
   // NÚT HÀNH ĐỘNG GẮN ĐÁY (sticky): ở màn cao (390×844+) và desktop, bàn cờ co lại còn một nửa
   // khung nên CTA ("Chơi thử Tutorial" / "Bỏ qua") nằm ngoài màn hình, phải cuộn mới thấy —
   // người mới KHÔNG thấy nút để bắt đầu (ảnh qc/shots-final/r01-menu-light-390.png).

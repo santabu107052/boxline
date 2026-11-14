@@ -1332,3 +1332,81 @@ button { font-family: inherit; color: inherit; }
 .slider::-moz-range-track { height: 4px; border-radius: var(--radius-full); background: var(--surface-2); border: 1px solid var(--border); }
 .slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: var(--radius-full); background: var(--accent); border: 2px solid var(--surface-1); }
 .slider:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+
+
+/* ==========================================================================
+   GHI ĐÈ BÀN CHƠI — bàn to nhất có thể & luôn căn giữa
+   (lỗi người dùng báo 14/11: trên desktop bàn chỉ 150×150 và lệch trái)
+
+   Nguyên nhân: màn chơi dùng grid 2 cột `340px | 1fr` nhưng khung bàn không được gán
+   `grid-column` nên rơi vào cột 1 (340px) và bị đẩy xuống hàng thứ 2 dưới HUD.
+   Sửa: gán vùng rõ ràng (xem class play__* trong ui.js) + cho khung bàn co giãn.
+   ========================================================================== */
+
+/* ---- Màn hẹp (1 cột): bàn là khối co giãn giữa HUD và thanh hành động ---- */
+.screen--play .play__board {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block: var(--space-2);
+}
+/* Canvas do renderer đặt width/height inline (vuông, DPR cap 2x) — luôn căn giữa khung. */
+.screen--play .play__board > canvas { margin: auto; }
+
+/* ---- Màn rộng ≥ 1024px ngang: HUD trên cùng, panel trái, BÀN CỘT PHẢI căn giữa ---- */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .screen--play {
+    display: grid;
+    grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "hud    hud"
+      "side   board"
+      "actions actions";
+    column-gap: var(--space-6);
+    row-gap: var(--space-2);
+    align-items: stretch;
+    width: 100%;
+    max-width: 1680px;
+    margin-inline: auto;
+    min-height: 0;
+    /* Chiều cao phần "side" chỉ chiếm hàng 2 (không ăn theo HUD) để khung bàn sát ngay dưới HUD. */
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+  .screen--play { grid-template-areas: "hud hud" "side board" "side board" "actions actions"; }
+  .screen--play .play__hud { grid-area: hud; }
+  /* Header (quay lại + tên) và thanh hướng dẫn xếp DỌC trong cột trái, ngay dưới HUD. */
+  .screen--play .play__head { grid-area: side; grid-row: 2; align-self: end; }
+  .screen--play .play__tut { grid-area: side; grid-row: 3; align-self: start; }
+  .screen--play .play__actions {
+    grid-area: actions;
+    width: 100%;
+    max-width: 720px;
+    margin-inline: auto;
+  }
+  /* BÀN: cột phải, chiếm toàn bộ phần còn lại, canvas căn giữa tuyệt đối. */
+  .screen--play .play__board {
+    grid-area: board;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    padding: var(--space-3);
+    box-sizing: border-box;
+  }
+  .screen--play .play__board > canvas {
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+  }
+}
+
+/* ---- Tablet dọc ≥ 1024px: vẫn 1 cột, canvas không vượt khung ---- */
+@media (min-width: 1024px) and (orientation: portrait) {
+  .screen--play .play__board > canvas { max-width: 100%; max-height: 100%; }
+}
