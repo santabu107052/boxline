@@ -201,9 +201,16 @@ export function createRenderer(canvas, deps = {}) {
    * Chạy hiệu ứng cho một nước đi vừa tô.
    * @param {{edge:Array, player:'A'|'B', closed:Array<[number,number]>, combo?:number}} move
    */
+  let idleTimer = 0;
+
   function animateMove(move) {
     if (!move || !move.edge) return;
-    if (reduced) return; // reduced-motion: vẽ luôn trạng thái cuối ở lần draw() kế tiếp
+    // Reduced-motion: bỏ hiệu ứng chuyển động nhưng VẪN đánh dấu nước vừa đi (vẽ tĩnh) để người
+    // chơi tiếp theo nhận ra đối thủ vừa đi đâu — đây là thông tin, không phải trang trí.
+    if (reduced) {
+      pushAnim({ kind: 'edge', t0: performance.now(), dur: MOTION.E1_EDGE_MS, edge: move.edge, player: move.player });
+      return;
+    }
     const t0 = performance.now();
     // E1 — cạnh vẽ ra 160ms; E2 — ô đóng 260ms (trễ dần theo E5: k*90ms, cap 480ms)
     pushAnim({ kind: 'edge', t0, dur: MOTION.E1_EDGE_MS, edge: move.edge, player: move.player });
@@ -372,23 +379,82 @@ export function createRenderer(canvas, deps = {}) {
     }
     ctx.restore();
 
-    // 9) Highlight cạnh vừa đi (ring mờ dần) — vẽ cuối để không bị che.
-    if (!reduced && ui.highlightEdge) {
-      const t = Math.max(0, Math.min(1, (now - (ui.highlightAt || 0)) / MOTION.HIGHLIGHT_MS));
-      if (t < 1) {
-        const owner = ui.highlightPlayer || state.turn;
-        const pts = edgePoints(ui.highlightEdge);
-        ctx.save();
-        ctx.globalAlpha = 0.5 * (1 - t);
-        ctx.strokeStyle = colors.players[owner];
-        ctx.lineWidth = ew + CANVAS.HIGHLIGHT_W_EXTRA;
-        ctx.lineCap = 'round';
+    // 9) VFX "NƯỚC VỪA ĐI" — LUÔN vẽ, tồn tại suốt lượt (không phải hiệu ứng 320ms như trước),
+    //    để người chơi tiếp theo dễ theo dõi quân vừa được đánh dấu ở đâu:
+    //      • quầng sáng màu người vừa đi bao quanh cạnh (halo),
+    //      • cạnh tô đậm hơn + lõi sáng,
+    //      • 2 đầu cạnh có "mắt xuyến" nhấp nháy chậm theo thời gian,
+    //      • mũi tên nhỏ chạy dọc cạnh theo hướng người ta vẽ (chỉ một chiều, giúp mắt bám).
+    //    Reduced-motion: chỉ giữ quầng sáng tĩnh + cạnh đậm (không nhấp nháy, không mũi tên chạy).
+    if (ui.lastMoveEdge) {
+      const owner = ui.lastMoveEdgePlayer || state.turn;
+      const col = colors.players[owner] || colors.accent;
+      const pts = edgePoints(ui.lastMoveEdge);
+      const len = step;
+      ctx.save();
+      ctx.lineCap = 'round';
+      // 9a) Quầng sáng ngoài — RẤT nhẹ để không bị đọc thành "ô đã tô" hay "preview cạnh".
+      // (bản đầu 0.22 + rộng 0.34*step trông như một thanh đậm, che mất dáng mảnh của cạnh.)
+      ctx.globalAlpha = 0.13;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = ew + step * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(pts.x1, pts.y1);
+      ctx.lineTo(pts.x2, pts.y2);
+      ctx.stroke();
+      // 9b) Lõi sáng (mảnh, đậm) — vẫn thấy rõ trên cả nền sáng và tối.
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = Math.max(1.4, ew * 0.48);
+      ctx.beginPath();
+      ctx.moveTo(pts.x1, pts.y1);
+      ctx.lineTo(pts.x2, pts.y2);
+      ctx.stroke();
+      // 9c) Hai đầu cạnh: vòng tròn viền + lõi đặc.
+      const endPulse = reduced ? 1 : 1 + 0.12 * Math.sin(now / 320);
+      for (const [px, py] of [[pts.x1, pts.y1], [pts.x2, pts.y2]]) {
+        ctx.globalAlpha = 0.9;
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = col;
         ctx.beginPath();
-        ctx.moveTo(pts.x1, pts.y1);
-        ctx.lineTo(pts.x2, pts.y2);
+        ctx.arc(px, py, Math.max(4, step * 0.115) * endPulse, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.restore();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(3, step * 0.07) * endPulse, 0, Math.PI * 2);
+        ctx.fill();
       }
+      // 9e) Nhịp "thở" nhẹ cho vòng đầu cạnh / mũi tên chạy: vẽ lại mỗi ~90ms khi bàn TĨNH.
+    // Bàn tĩnh thì vòng rAF tự dừng (không tốn pin); chỉ hẹn một nhịp để hiệu ứng tiếp tục sống.
+    if (!reduced && !rafId) {
+      if (typeof idleTimer === 'number') globalThis.clearTimeout(idleTimer);
+      idleTimer = globalThis.setTimeout(() => {
+        idleTimer = 0;
+        if (!destroyed && rafId === 0 && lastState) paint(performance.now());
+      }, 90);
+    }
+
+    // 9d) Mũi tên nhỏ chạy dọc cạnh (bỏ khi reduced-motion).
+      if (!reduced) {
+        const cycle = 1100;
+        const k = ((now % cycle) / cycle);
+        const dx = (pts.x2 - pts.x1) / len;
+        const dy = (pts.y2 - pts.y1) / len;
+        const travel = 0.28 + 0.44 * k;                 // chạy trong 28%–72% chiều dài cạnh
+        const cx = pts.x1 + (pts.x2 - pts.x1) * travel;
+        const cy = pts.y1 + (pts.y2 - pts.y1) * travel;
+        const a = Math.max(0, Math.min(1, Math.sin(k * Math.PI)));  // mờ hai đầu, rõ ở giữa
+        const size = Math.max(3.2, step * 0.075);
+        ctx.globalAlpha = 0.85 * a;
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.moveTo(cx + dx * size, cy + dy * size);
+        ctx.lineTo(cx - dx * size * 0.6 - dy * size * 0.75, cy - dy * size * 0.6 + dx * size * 0.75);
+        ctx.lineTo(cx - dx * size * 0.6 + dy * size * 0.75, cy - dy * size * 0.6 - dx * size * 0.75);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
     // 10) Focus ring bàn phím (chỉ vẽ khi điều hướng bằng phím).
@@ -631,6 +697,7 @@ export function createRenderer(canvas, deps = {}) {
     destroyed = true;
     if (rafId) cancelAnimationFrame(rafId);
     rafId = 0;
+    if (idleTimer) { globalThis.clearTimeout(idleTimer); idleTimer = 0; }
     anims = [];
     try {
       if (themeBound) globalThis.removeEventListener('themechange', onThemeChange);

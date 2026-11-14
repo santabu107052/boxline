@@ -70,7 +70,8 @@ export function createAudio(options = {}) {
       ctx = new AudioCtor();
       if (typeof ctx.resume === 'function' && ctx.state === 'suspended') ctx.resume();
       master = ctx.createGain();
-      master.gain.value = state.sound ? state.volume * AUDIO.MASTER * 4 : 0; // MASTER là hệ số trên nền 1
+      // Âm lượng tổng = volume người dùng (0..1) × MASTER (hệ số an toàn chống chói).
+      master.gain.value = state.sound ? Math.min(1, state.volume) * AUDIO.MASTER : 0;
       master.connect(ctx.destination);
       sfxBus = ctx.createGain();
       sfxBus.gain.value = 1;
@@ -89,6 +90,8 @@ export function createAudio(options = {}) {
   function applyMasterGain() {
     if (!ctx || !master) return;
     try {
+      // BUG ĐÃ SỬA (14/11): trước đây âm lượng tổng bị đặt về ≈0.0001 (gần như im lặng) ngay sau khi
+      // mở khoá → nhạc nền và mọi SFX đều KHÔNG nghe thấy. Nay dùng đúng một công thức như buildGraph.
       const target = state.sound ? Math.min(1, state.volume) * AUDIO.MASTER : 0;
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.setTargetAtTime(target, ctx.currentTime, 0.03);
@@ -260,7 +263,7 @@ export function createAudio(options = {}) {
     if (!buildGraph()) return false;
     try {
       if (ctx.state === 'suspended') ctx.resume();
-      // iOS: cần phát im lặng trong gesture để mở khoá.
+      // iOS: cần phát im lặng trong gesture để mở khoá (oscillator gain 0.0001 nối thẳng destination).
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
       g.gain.value = 0.0001;

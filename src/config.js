@@ -125,15 +125,18 @@ export const MOTION = Object.freeze({
 
 /** Âm lượng — docs/20-DESIGN.md §8.3. */
 export const AUDIO = Object.freeze({
-  MASTER: 0.25,
-  BGM: 0.08,
-  TICK: 0.12,
-  TOCK: 0.14,
-  TURN: 0.06,
-  TIMEOUT: 0.1,
-  WIN: 0.14,
-  DRAW: 0.1,
-  BLIP: 0.05,
+  /* Âm lượng tổng (hệ số an toàn). Người dùng chỉnh 0–100% trong Cài đặt, nhân với hệ số này.
+     Trước 14/11 để 0.25 → nghe quá nhỏ trên loa điện thoại/laptop. 0.9 cho mức gần đầy nhưng vẫn
+     chừa khoảng chống "chói" khi nhiều SFX chồng nhau. */
+  MASTER: 0.9,
+  BGM: 0.16,   // nhạc nền: đủ nghe nhưng không lấn SFX
+  TICK: 0.18,
+  TOCK: 0.2,
+  TURN: 0.08,
+  TIMEOUT: 0.14,
+  WIN: 0.2,
+  DRAW: 0.14,
+  BLIP: 0.08,
 });
 
 /* ---------------------------------------------------------------------------

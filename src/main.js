@@ -456,8 +456,10 @@ function boot() {
       focusEdge: keyboardActive ? focusEdge : null,
       lastMovePlayer: lastMoveInfo ? lastMoveInfo.player : null,
       highlightAt,
-      highlightEdge: lastMoveInfo && now() - highlightAt < 320 ? lastMoveInfo.edge : null,
-      highlightPlayer: lastMoveInfo ? lastMoveInfo.player : null,
+      // VFX "nước vừa đi": giữ nguyên suốt lượt kế tiếp (không tự tắt sau 320ms) để đối thủ luôn
+      // thấy nước đi vừa rồi. Chỉ đổi khi có nước mới hoặc chuyển màn (lastMoveInfo = null).
+      lastMoveEdge: lastMoveInfo ? lastMoveInfo.edge : null,
+      lastMoveEdgePlayer: lastMoveInfo ? lastMoveInfo.player : null,
       // Vòng cảnh báo ô nguy hiểm: hiện suốt bước 4 (nháy đỏ khi bấm cạnh mồi).
       warnBox: warnBox || null,
       warnFlash: !!warnBox && now() < warnFlashUntil,
