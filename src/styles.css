@@ -264,6 +264,14 @@ button { font-family: inherit; color: inherit; }
 
 .btn--danger { color: var(--danger); }
 .btn--danger:hover { background: var(--danger-soft); }
+/* Nút hành động phá huỷ PHẢI trông như một nút (nền + viền), không chỉ chữ đỏ trên nền trắng. */
+.btn--danger-solid {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn--danger-solid:hover { background: var(--danger-soft); border-color: var(--danger); filter: brightness(0.98); }
+.btn--danger-solid:active { transform: scale(0.97); }
 
 .btn--block { width: 100%; }
 

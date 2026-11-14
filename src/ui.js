@@ -454,7 +454,7 @@ export function createUI(deps = {}) {
       diffField,
       sizeField,
       firstField,
-      h('fieldset', { class: 'fieldset' }, [timeToggle.el, timePicker]),
+      h('fieldset', { class: 'fieldset', id: 'field-time' }, [timeToggle.el, timePicker]),
   ]);
   const menuScreen = h('section', { class: 'screen screen--menu', id: 'screen-menu', 'aria-label': 'Màn hình chính' }, [
     menuHeader,
@@ -605,12 +605,52 @@ export function createUI(deps = {}) {
   const guideActions = h('div', { class: 'guide__actions', id: 'guide-actions' }, [guideStartBtn, guideSkipBtn]);
   const resultActions = h('div', { class: 'result__actions result__actions--sticky' }, [resultNewBtn, resultMenuBtn]);
 
-  // Tutorial bước 5: bàn bị khoá nên hàng tùy chọn thật được "bê" xuống ngay dưới bàn
-  // (docs/30-TUTORIAL.md §2 bước 5: người chơi phải bấm được control thật).
-  const tutOptions = h('div', { class: 'tut-options', id: 'tut-options' }, [
-    h('p', { class: 'tut-options__lead', text: TUTORIAL_STEPS.steps[4].hint }),
-    sizeField, diffField, timeToggle.el,
-  ]);
+  // Tutorial bước 5: hàng tùy chọn thật hiện ngay dưới bàn (docs/30-TUTORIAL.md §2 bước 5: người
+  // chơi phải bấm được control thật).
+  // BUG NGHIÊM TRỌNG đã sửa (14/11): trước đây khối này nhận THẲNG `sizeField`, `diffField`,
+  // `timeToggle.el` → appendChild KÉO 3 node đó RA KHỎI MENU, nên menu vĩnh viễn mất mục
+  // "Kích thước bàn" và "Độ khó". Nay dựng bằng SEGMENTED ĐỘC LẬP (bản sao), không đụng node menu.
+  const tutOptions = h('div', { class: 'tut-options', id: 'tut-options' });
+  let tutOptionsFilled = false;
+  function fillTutOptions() {
+    if (tutOptionsFilled) return;
+    tutOptionsFilled = true;
+    tutOptions.appendChild(h('p', { class: 'tut-options__lead', text: TUTORIAL_STEPS.steps[4].hint }));
+    const sizeCloneSeg = segmented({
+      name: 'Kích thước bàn (bài học)',
+      options: BOARD_SIZES,
+      labels: Object.fromEntries(BOARD_SIZES.map((n) => [n, `${n}×${n}`])),
+      value: sizeSeg.getValue(),
+      extraClass: 'segmented--sizes segmented--clone',
+      wrap: true,
+      onChange: (v) => { sizeSeg.setValue(v); emit('change', { boardSize: v }); },
+    });
+    const diffCloneSeg = segmented({
+      name: 'Độ khó (bài học)',
+      options: DIFFICULTIES,
+      labels: DIFFICULTY_LABELS,
+      value: diffSeg.getValue(),
+      onChange: (v) => { diffSeg.setValue(v); emit('change', { difficulty: v }); },
+    });
+    tutOptions.appendChild(h('fieldset', { class: 'fieldset', style: 'margin-top:0' }, [
+      h('legend', { class: 'fieldset__legend', text: 'Kích thước bàn' }),
+      sizeCloneSeg.el,
+    ]));
+    tutOptions.appendChild(h('fieldset', { class: 'fieldset' }, [
+      h('legend', { class: 'fieldset__legend', text: 'Độ khó' }),
+      diffCloneSeg.el,
+    ]));
+    tutOptions.appendChild(h('fieldset', { class: 'fieldset' }, [
+      switchRow({
+        label: 'Thời gian mỗi lượt',
+        sub: 'Hết giờ thì mất lượt',
+        checked: timeToggle.get(),
+        onChange: (v) => { timeToggle.set(v); emit('change', { timeLimitOn: v }); },
+      }).el,
+    ]));
+    // Chạm vào control thật của bước 5 → báo "đã xem tùy chọn" (optionsExplored).
+    tutOptions.addEventListener('pointerup', () => emit('optionsTouched'));
+  }
   playScreen.insertBefore(tutOptions, actionBar);
   tutOptions.hidden = true; // chỉ hiện ở bước 5 (main.js gọi setOptionsExpanded)
 
@@ -623,11 +663,8 @@ export function createUI(deps = {}) {
 
   /** Ẩn/hiện khối tùy chọn của bước 5 (chỉ hiện khi tutorial đang ở bước 5). */
   function setOptionsExpanded(flag) {
+    if (flag) fillTutOptions();   // dựng bản sao control (không đụng node của menu)
     tutOptions.hidden = !flag;
-    if (flag) {
-      // Bước 5 bắt buộc thấy được 3 control: mở phần chọn giây nếu giới hạn thời gian đang bật.
-      syncTimePicker(timeToggle.get());
-    }
   }
 
   // Chạm vào bất kỳ control thật nào trong khối tùy chọn → báo "đã xem tùy chọn" (event optionsExplored).
@@ -760,9 +797,13 @@ export function createUI(deps = {}) {
 
     const actions = h('div', { class: `modal__actions ${opts.actionsRow ? 'modal__actions--row' : ''}`.trim() });
     for (const a of opts.actions || []) {
+      // `a.danger` = nút hành động PHÁ HUỶ (vd "Về menu" khi đang chơi): nền đỏ nhạt + chữ đỏ đậm
+      // để người dùng thấy rõ đây là nút bấm được. Trước đây dùng `btn--danger` chỉ có chữ đỏ trên
+      // nền trong suốt → trông như dòng chữ mờ, không ai biết bấm được (lỗi báo 14/11).
+      const variant = a.danger ? 'btn--danger-solid' : (a.variant || 'btn--secondary');
       const btn = h('button', {
         type: 'button',
-        class: `btn ${a.variant || 'btn--secondary'} btn--block`,
+        class: `btn ${variant} btn--block`,
         id: a.id || undefined,
         text: a.label,
       });
@@ -924,7 +965,7 @@ export function createUI(deps = {}) {
       autofocus: 'confirm-ok',
       actions: [
         { label: cancelLabel || 'Huỷ', variant: 'btn--ghost' },
-        { id: 'confirm-ok', label: confirmLabel || 'Đồng ý', variant: danger ? 'btn--danger' : 'btn--primary', onClick: onConfirm },
+        { id: 'confirm-ok', label: confirmLabel || 'Đồng ý', danger, variant: danger ? 'btn--danger-solid' : 'btn--primary', onClick: onConfirm },
       ],
     });
   }
@@ -1003,6 +1044,8 @@ export function createUI(deps = {}) {
     rpsMeHand.className = 'rps__hand';
     rpsComHand.className = 'rps__hand';
     openModal({ title: rpsTitle.textContent, body: rpsBody, dismissible: false, actions: [] });
+    // Đánh dấu lớp modal vừa mở để `closeRps()` chỉ đóng ĐÚNG hộp oẳn tù tì.
+    if (modalStack.length) modalStack[modalStack.length - 1].kind = 'rps';
   }
 
   /**
@@ -1046,7 +1089,10 @@ export function createUI(deps = {}) {
   }
 
   function closeRps() {
-    closeModal();
+    // Đóng đúng lớp modal của hộp oẳn tù tì (nếu đã đóng rồi thì thôi) — tránh trường hợp
+    // hai lượt gọi liên tiếp làm đóng lây modal khác.
+    const idx = modalStack.findIndex((entry) => entry && entry.kind === 'rps');
+    if (idx >= 0) closeModal();
   }
 
   /* --------------------------------------------------------- HỮu DỤNG */
@@ -1147,8 +1193,14 @@ export function createUI(deps = {}) {
   /** Cập nhật thanh hướng dẫn tutorial. */
   function updateTutorialBar({ visible, step, text, hint, hintState, showFinish, finishLabel }) {
     tutBar.hidden = !visible;
-    // Khối tùy chọn của bước 5 chỉ tồn tại khi đang ở bước 5.
-    tutOptions.hidden = !(visible && Number(showFinish));
+    // Nút "Xong" và "Bỏ qua" chỉ thuộc thanh hướng dẫn: khi thanh ẩn phải ẩn theo
+    // (trước đây chúng dính lại và nằm đè lên thanh hành động sau khi học xong tutorial).
+    tutFinishBtn.hidden = !(visible && showFinish);
+    tutSkipBtn.hidden = !visible;
+    // Khối tùy chọn của bước 5 chỉ tồn tại khi đang ở bước 5 (dựng bản sao control khi cần).
+    const showOpts = !!(visible && Number(showFinish));
+    if (showOpts) fillTutOptions();
+    tutOptions.hidden = !showOpts;
     if (!visible) return;
     if (step) tutStepEl.textContent = step;
     if (text !== undefined) tutTextEl.textContent = text;

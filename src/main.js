@@ -305,8 +305,10 @@ function boot() {
       guideClose: () => finishGuide(false),
       // Nút "Bỏ qua" của tutorial tương tác phải THOÁT TUTORIAL rồi vào ván thật 3×3 Dễ.
       // (Trước đây trỏ nhầm vào finishGuide → nút chết: tutorial không thoát, không vào ván.)
-      tutorialSkip: () => { finishTutorial(); },
-      tutorialFinish: () => finishTutorial(),
+      // Học xong (Xong) hoặc bỏ ngang (Bỏ qua) đều đưa người chơi về MENU để tự chọn chế độ/độ khó.
+      // Người dùng báo 14/11: bấm "thoát" sau tutorial không về được menu.
+      tutorialSkip: () => finishTutorial({ goMenu: true }),
+      tutorialFinish: () => finishTutorial({ goMenu: true }),
       rpsPick: (choice) => onRpsPick(choice),
       rpsDone: (winner) => onRpsDone(winner),
       optionsTouched: () => onTutorialControlTouched(),
@@ -850,6 +852,9 @@ function boot() {
   function onRpsDone(winner) {
     const m = pendingMatch || makeMatch();
     pendingMatch = null;
+    // BUG (14/11): trước đây không đóng hộp "Oẳn tù tì" → bàn mở phía sau nhưng modal vẫn phủ,
+    // người chơi thấy như "không qua được màn chơi". Phải đóng modal trước khi vào bàn.
+    try { ui.closeRps(); } catch { /* bỏ qua */ }
     const humanFirst = winner === 'player';
     // Người chơi luôn là A; máy/Người 2 là B.
     launchGame(m, humanFirst ? 'A' : 'B');
@@ -879,7 +884,8 @@ function boot() {
     game = null;
     match = null;
     paused = false;
-    ui.updateTutorialBar({ visible: false });
+    ui.updateTutorialBar({ visible: false, hint: '', hintState: '' });
+    ui.setOptionsExpanded(false);
     setScreen('menu');
     ads.showBanner();
     if (!readJSON(STORAGE_KEYS.tutorialDone, false)) openQuickGuide();
@@ -1346,7 +1352,7 @@ function boot() {
     audio.play('blip');
   }
 
-  function finishTutorial() {
+  function finishTutorial({ goMenu: backToMenu = false } = {}) {
     globalThis.clearTimeout(tutorialAdvanceTimer);
     globalThis.clearTimeout(tutorialAiTimer);
     tutorial = null;
@@ -1354,6 +1360,14 @@ function boot() {
     writeJSON(STORAGE_KEYS.tutorialDone, true);
     writeJSON(STORAGE_KEYS.tooltipSeen, true);
     ui.updateTutorialBar({ visible: false });
+    // Ẩn cả nút "Bỏ qua" / "Xong" của tutorial và khối tùy chọn của bước 5 (trước đây dính lại
+    // sau khi học xong). `setOptionsExpanded(false)` gọi thẳng để không phụ thuộc beginStep.
+    ui.setOptionsExpanded(false);
+    ui.updateTutorialBar({ visible: false, hint: '', hintState: '' });
+    if (backToMenu) {
+      goMenu();
+      return;
+    }
     // Mở ván thật 3×3, độ khó Dễ, người chơi đi trước.
     startMatch({ size: 3, difficulty: 'easy', first: 'you', mode: 'ai', timeLimitOn: settings.timeLimitOn });
   }
@@ -1614,7 +1628,7 @@ function boot() {
         size: Number.isInteger(o.size) ? o.size : settings.boardSize,
         mode: ['ai', 'pvp'].includes(o.mode) ? o.mode : settings.mode,
         difficulty: ['easy', 'medium', 'hard'].includes(o.difficulty) ? o.difficulty : settings.difficulty,
-        first: o.first === 'com' ? 'com' : 'you',
+        first: o.first === 'com' ? 'com' : (o.first === 'toss' ? 'toss' : 'you'),
         timeLimitOn: o.timeLimitOn !== undefined ? !!o.timeLimitOn : settings.timeLimitOn,
         timeSec: o.timeSec,
       });

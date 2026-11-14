@@ -18,3 +18,6 @@ screenshots-final/
 qc/shot*/
 qc/out/
 *.json.tmp
+
+screenshots-fix/
+screenshots-fix2/
