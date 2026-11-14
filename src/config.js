@@ -84,9 +84,13 @@ export const CANVAS = Object.freeze({
   STEP_MIN: 32,
   HIT_MIN: 28,             // vùng bắt cạnh tối thiểu (mỗi bên)
   HIT_RATIO: 0.6,          // min(28, step * 0.6)
-  DOT_R_SMALL: 2.5,        // bàn ≤ 5×5
-  DOT_R_BIG: 2,            // bàn ≥ 6×6
-  DOT_R_ACTIVE: 4,
+  /* Điểm to hơn hẳn để dễ nhìn (người dùng yêu cầu 14/11). Bàn lớn vẫn thu nhỏ theo bước lưới
+     nhưng có sàn tối thiểu — xem `dotRadiusFor()` trong render.js. */
+  DOT_R: 6,                // bán kính mặc định cho khoảng cách lưới ~60px
+  DOT_R_MIN: 2.6,          // sàn: bàn 12×12 trên điện thoại 320px vẫn thấy rõ
+  DOT_R_SMALL: 5.5,        // bàn ≤ 5×5 (giữ tương thích chỗ khác dùng)
+  DOT_R_BIG: 4.5,          // bàn ≥ 6×6
+  DOT_R_ACTIVE: 6,
   EDGE_W_SMALL: 3,
   EDGE_W_BIG: 2.5,
   BORDER_W: 4,

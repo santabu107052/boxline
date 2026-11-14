@@ -240,8 +240,14 @@ export function createRenderer(canvas, deps = {}) {
   function edgeWidthFor(n) {
     return n <= 5 ? CANVAS.EDGE_W_SMALL : CANVAS.EDGE_W_BIG;
   }
+  /**
+   * Bán kính dot co theo khoảng cách lưới (bàn lớn → dot nhỏ đi) nhưng có SÀN để luôn nhìn rõ.
+   * Bàn 5×5 (~60px/bước) → ~5.5px; bàn 12×12 trên điện thoại (~24px/bước) → ~2.6px.
+   */
   function dotRadiusFor(n) {
-    return n <= 5 ? CANVAS.DOT_R_SMALL : CANVAS.DOT_R_BIG;
+    const byStep = step * 0.09;            // ~9% khoảng cách lưới
+    const cap = n <= 5 ? CANVAS.DOT_R_SMALL : CANVAS.DOT_R;
+    return Math.max(CANVAS.DOT_R_MIN, Math.min(cap, byStep));
   }
   function boxRadiusFor() {
     return cssW <= 400 ? CANVAS.BOX_RADIUS_NARROW : CANVAS.BOX_RADIUS;
@@ -264,16 +270,9 @@ export function createRenderer(canvas, deps = {}) {
     // 1) Xoá sạch theo kích thước CSS px.
     ctx.clearRect(0, 0, cssW, cssH);
 
-    // 3) Viền ngoài đã tô sẵn — vẽ TRƯỚC mọi thứ.
-    ctx.save();
-    ctx.strokeStyle = colors.borderStrong;
-    ctx.lineWidth = CANVAS.BORDER_W;
-    ctx.lineCap = 'square';
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.rect(originX, originY, boardPx, boardPx);
-    ctx.stroke();
-    ctx.restore();
+    // 3) KHÔNG còn viền ngoài vẽ sẵn (người dùng yêu cầu 14/11: "không có sẵn viền cho các ván chơi").
+    //    Ván mới chỉ có các điểm (dot) — người chơi tự nối cạnh, tô kín ô thì ô hiện khung.
+    //    (Luật vẫn giữ: cạnh nằm trên mép bàn không chơi được — xem engine.isInteriorEdge.)
 
     // 4) Ô đã tô (fill tint + viền bo góc + hoa tiết + nhãn).
     for (let br = 0; br < n; br++) {
