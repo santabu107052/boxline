@@ -1490,11 +1490,15 @@ function boot() {
     ui.announce(`Đang chọn: cạnh ${o === 'H' ? 'ngang' : 'dọc'} hàng ${r + 1} cột ${c + 1}.`);
   }
 
+  // Focus ring CHỈ hiện khi người chơi THỰC SỰ điều hướng bằng phím (mũi tên/Enter/Space…).
+  // BUG báo 14/11: chỉ cần bấm chuột/Chạm vào bàn là canvas nhận focus → `keyboardActive = true`
+  // → vẽ vòng focus màu xanh ở cạnh đầu tiên (góc trên-trái) dù KHÔNG có nước đi nào được thực hiện;
+  // người chơi tưởng đó là viền ô. Nay: focus bằng chuột/chạm thì KHÔNG vẽ ring; chỉ khi bấm phím
+  // điều hướng mới bật (xử lý ở keydown bên dưới).
   canvas.addEventListener('focus', () => {
-    keyboardActive = true;
+    keyboardActive = false;
     refreshFocusEdge();
     render();
-    announceFocusEdge();
   });
 
   canvas.addEventListener('blur', () => {
