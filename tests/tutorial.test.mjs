@@ -80,17 +80,17 @@ test('TUTORIAL_STEPS: đúng 5 bước, bàn 3×3, đúng thứ tự id và khó
 test('TUTORIAL_STEPS: câu chữ nguyên văn docs/30-TUTORIAL.md §3', () => {
   const expected = {
     1: {
-      instruction: 'Bấm vào một đoạn thẳng để tô nó.',
-      hint: 'Mỗi lần chỉ tô được một đoạn.',
+      instruction: 'Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.',
+      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.',
       successLine: 'Xong. Lượt chuyển sang máy.',
     },
     2: {
-      instruction: 'Ô góc này còn thiếu một cạnh. Bấm cạnh còn trống đó.',
+      instruction: 'Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.',
       hint: 'Kín 4 cạnh là mình được ô.',
       successLine: 'Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.',
     },
     3: {
-      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.',
+      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.',
       hint: 'Đây là lần đi thứ hai liên tiếp của bạn.',
       successLine: 'Đó là chơi luân phiên: hết lượt thì đến máy.',
     },
@@ -101,7 +101,7 @@ test('TUTORIAL_STEPS: câu chữ nguyên văn docs/30-TUTORIAL.md §3', () => {
       failLine: 'Cạnh đó mở ô cho máy mất rồi. Thử lại nhé.',
     },
     5: {
-      instruction: 'Viền xung quanh đã tô sẵn, bạn không cần tô viền.',
+      instruction: 'Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.',
       hint: 'Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.',
       successLine: 'Hết hướng dẫn. Chơi ván đầu tiên nhé!',
     },
@@ -387,9 +387,9 @@ test('Bảng thuật ngữ §6: đủ 6 mục nguyên văn và ẩn dụ xuyên 
   );
   assert.equal(GLOSSARY.entries.length, 6);
   assert.deepEqual(GLOSSARY.entries.map((e) => e.term), [
-    'Cạnh', 'Ô', 'Viền ngoài', 'Giữ lượt', 'Cạnh thứ 3 (cạnh xấu)', 'Chuỗi',
+    'Cạnh', 'Ô', 'Mép bàn', 'Giữ lượt', 'Cạnh thứ 3 (cạnh xấu)', 'Chuỗi',
   ]);
-  assert.equal(GLOSSARY.entries[2].plain, 'Cạnh nằm ở mép bàn. Đã tô sẵn, không ai tô lại, không tính điểm.');
+  assert.equal(GLOSSARY.entries[2].plain, 'Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối.');
   for (const e of GLOSSARY.entries) {
     assert.ok(e.term && e.plain && e.metaphor, 'mỗi mục cần term/plain/metaphor');
   }

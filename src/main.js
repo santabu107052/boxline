@@ -896,11 +896,16 @@ function boot() {
   function requestNewGame() {
     if (!game || screen !== 'play') { startMatch(); return; }
     if (isTutorialBoard()) {
+      // LỖI ĐÃ SỬA (14/11): trước đây gọi finishGuide(true) → mở ván thật NHƯNG `tutorial.active`
+      // vẫn còn, nên bàn bị khoá theo kịch bản (chỉ 6 cạnh được phép) → "bấm Ván mới không chơi được"
+      // và nút quay lại cũng không thoát. Nay thoát tutorial hẳn rồi về menu cho người chơi chọn.
       ui.confirmModal({
         title: 'Bỏ hướng dẫn?',
-        message: 'Bạn muốn thoát hướng dẫn và chơi ván thật?',
+        message: 'Bạn muốn thoát hướng dẫn và về menu?',
         confirmLabel: 'Thoát hướng dẫn',
-        onConfirm: () => finishGuide(true),
+        cancelLabel: 'Ở lại',
+        danger: true,
+        onConfirm: () => finishTutorial({ goMenu: true }),
       });
       return;
     }
@@ -927,7 +932,8 @@ function boot() {
         confirmLabel: 'Về menu',
         cancelLabel: 'Ở lại',
         danger: true,
-        onConfirm: () => finishGuide(true),
+        // Cùng lỗi như trên: finishGuide(true) giữ `tutorial.active` → nút "Về menu" mở ván thật.
+        onConfirm: () => finishTutorial({ goMenu: true }),
         onClose: () => resumeClock(),
       });
       return;
@@ -1132,6 +1138,15 @@ function boot() {
    */
   function finishGuide(goStraightToPlay) {
     writeJSON(STORAGE_KEYS.tutorialDone, true);
+    // An toàn: nếu đang ở màn hướng dẫn mà trạng thái tutorial còn sót thì dọn luôn, tránh bàn
+    // mở ra trong trạng thái "bàn khoá theo kịch bản".
+    if (isTutorialBoard()) {
+      globalThis.clearTimeout(tutorialAdvanceTimer);
+      globalThis.clearTimeout(tutorialAiTimer);
+      tutorial = null;
+      ui.updateTutorialBar({ visible: false, hint: '', hintState: '' });
+      ui.setOptionsExpanded(false);
+    }
     if (goStraightToPlay) {
       startMatch({ size: 3, difficulty: 'easy', first: 'you', mode: 'ai' });
     } else {
@@ -1441,7 +1456,9 @@ function boot() {
     pointerDownEdge = edge && isLegal(game, edge) ? edge : null;
     if (pointerDownEdge) {
       keyboardActive = false;
-      try { canvas.setPointerCapture(e.pointerId); } catch { /* bỏ qua */ }
+      // KHÔNG setPointerCapture: bắt pointer là trình duyệt gửi mọi pointerup về canvas, khiến
+      // nút nằm dưới ngón tay (vd "Bỏ qua" của hướng dẫn) có thể mất cú thả → không phát `click`
+      // (người dùng phải bấm 2 lần). Kéo-huỷ đã được xử lý qua sự kiện pointerup trên canvas.
       hoverEdge = pointerDownEdge;
       render(false);
     }

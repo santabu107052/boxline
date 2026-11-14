@@ -2824,8 +2824,8 @@ const TUTORIAL_STEPS = {
       decoyEdges: [],
       aiMoves: [],
       title: 'Bước 1/5',
-      instruction: 'Bấm vào một đoạn thẳng để tô nó.',
-      hint: 'Mỗi lần chỉ tô được một đoạn.',
+      instruction: 'Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.',
+      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.',
       successLine: 'Xong. Lượt chuyển sang máy.',
       advanceOn: 'randomEdgeChosen',
       advanceDelayMs: 700,
@@ -2842,7 +2842,7 @@ const TUTORIAL_STEPS = {
       decoyEdges: [],
       aiMoves: [],
       title: 'Bước 2/5',
-      instruction: 'Ô góc này còn thiếu một cạnh. Bấm cạnh còn trống đó.',
+      instruction: 'Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.',
       hint: 'Kín 4 cạnh là mình được ô.',
       successLine: 'Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.',
       advanceOn: 'boxCaptured',
@@ -2867,7 +2867,7 @@ const TUTORIAL_STEPS = {
       },
       aiDelayMs: 600,
       title: 'Bước 3/5',
-      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.',
+      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.',
       hint: 'Đây là lần đi thứ hai liên tiếp của bạn.',
       successLine: 'Đó là chơi luân phiên: hết lượt thì đến máy.',
       advanceOn: 'turnEnded',
@@ -2906,7 +2906,7 @@ const TUTORIAL_STEPS = {
       aiMoves: [],
       controls: ['timeLimit', 'boardSize', 'difficulty'],
       title: 'Bước 5/5',
-      instruction: 'Viền xung quanh đã tô sẵn, bạn không cần tô viền.',
+      instruction: 'Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.',
       hint: 'Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.',
       successLine: 'Hết hướng dẫn. Chơi ván đầu tiên nhé!',
       advanceOn: 'optionsExplored',
@@ -2951,7 +2951,8 @@ const QUICK_GUIDE = Object.freeze({
       id: 1,
       title: 'Tô một đoạn thẳng',
       text: 'Mỗi lượt, bạn tô một đoạn thẳng còn trống.',
-      // Minh hoạ: bàn 3×3, viền ngoài đậm, một cạnh dọc ở giữa bên trái vừa tô màu xanh dương.
+      // Minh hoạ: bàn 3×3 CHỈ có các chấm (không có viền vẽ sẵn), một cạnh dọc ở giữa bên trái
+      // vừa tô màu xanh dương.
       illustration: 'edge',
       // §4: "một cạnh dọc ở giữa bên trái vừa tô màu xanh dương" → cạnh dọc [0,1,'V'].
       seedEdges: [[0, 1, 'V']],
@@ -3055,7 +3056,7 @@ const GLOSSARY = Object.freeze({
   metaphor:
     'Mỗi ô là một cái hộp, cạnh là thanh ghép của nắp hộp. Ghép đủ 4 thanh thì hộp đóng lại và phần thưởng là của mình.',
   metaphorCaveat:
-    'Lưu ý: viền ngoài là một thanh có sẵn, nên ô ở góc chỉ cần 3 thanh là kín.',
+    'Lưu ý: mọi ô đều cần đủ 4 cạnh do hai bên tô — kể cả ô ở góc. Bàn chỉ có các chấm, không có sẵn cạnh nào.',
   entries: [
     {
       term: 'Cạnh',
@@ -3068,9 +3069,9 @@ const GLOSSARY = Object.freeze({
       metaphor: 'Một cái hộp.',
     },
     {
-      term: 'Viền ngoài',
-      plain: 'Cạnh nằm ở mép bàn. Đã tô sẵn, không ai tô lại, không tính điểm.',
-      metaphor: 'Khung đỡ có sẵn của cả cái kệ — không phải hộp của ai.',
+      term: 'Mép bàn',
+      plain: 'Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối.',
+      metaphor: 'Mép của tờ giấy — không phải thanh ghép của hộp nào.',
     },
     {
       term: 'Giữ lượt',
@@ -5663,6 +5664,9 @@ function createUI(deps = {}) {
     tutFinishBtn.addEventListener('click', () => emit('tutorialFinish'));
     resultNewBtn.addEventListener('click', () => emit('resultNew'));
     resultMenuBtn.addEventListener('click', () => emit('resultMenu'));
+    // LỖI ĐÃ SỬA (14/11): hai nút của màn "Hướng dẫn nhanh" trước đây KHÔNG được gắn sự kiện
+    // (chỉ nút × mới có) → bấm "Bỏ qua" / "Chơi thử Tutorial" không phản hồi, người dùng phải bấm
+    // nhiều lần mới vào được game.
     guideStartBtn.addEventListener('click', () => emit('guideStart'));
     guideSkipBtn.addEventListener('click', () => emit('guideSkip'));
     guideCloseBtn.addEventListener('click', () => emit('guideClose'));
@@ -6758,11 +6762,16 @@ function boot() {
   function requestNewGame() {
     if (!game || screen !== 'play') { startMatch(); return; }
     if (isTutorialBoard()) {
+      // LỖI ĐÃ SỬA (14/11): trước đây gọi finishGuide(true) → mở ván thật NHƯNG `tutorial.active`
+      // vẫn còn, nên bàn bị khoá theo kịch bản (chỉ 6 cạnh được phép) → "bấm Ván mới không chơi được"
+      // và nút quay lại cũng không thoát. Nay thoát tutorial hẳn rồi về menu cho người chơi chọn.
       ui.confirmModal({
         title: 'Bỏ hướng dẫn?',
-        message: 'Bạn muốn thoát hướng dẫn và chơi ván thật?',
+        message: 'Bạn muốn thoát hướng dẫn và về menu?',
         confirmLabel: 'Thoát hướng dẫn',
-        onConfirm: () => finishGuide(true),
+        cancelLabel: 'Ở lại',
+        danger: true,
+        onConfirm: () => finishTutorial({ goMenu: true }),
       });
       return;
     }
@@ -6789,7 +6798,8 @@ function boot() {
         confirmLabel: 'Về menu',
         cancelLabel: 'Ở lại',
         danger: true,
-        onConfirm: () => finishGuide(true),
+        // Cùng lỗi như trên: finishGuide(true) giữ `tutorial.active` → nút "Về menu" mở ván thật.
+        onConfirm: () => finishTutorial({ goMenu: true }),
         onClose: () => resumeClock(),
       });
       return;
@@ -6994,6 +7004,15 @@ function boot() {
    */
   function finishGuide(goStraightToPlay) {
     writeJSON(STORAGE_KEYS.tutorialDone, true);
+    // An toàn: nếu đang ở màn hướng dẫn mà trạng thái tutorial còn sót thì dọn luôn, tránh bàn
+    // mở ra trong trạng thái "bàn khoá theo kịch bản".
+    if (isTutorialBoard()) {
+      globalThis.clearTimeout(tutorialAdvanceTimer);
+      globalThis.clearTimeout(tutorialAiTimer);
+      tutorial = null;
+      ui.updateTutorialBar({ visible: false, hint: '', hintState: '' });
+      ui.setOptionsExpanded(false);
+    }
     if (goStraightToPlay) {
       startMatch({ size: 3, difficulty: 'easy', first: 'you', mode: 'ai' });
     } else {
@@ -7303,7 +7322,9 @@ function boot() {
     pointerDownEdge = edge && isLegal(game, edge) ? edge : null;
     if (pointerDownEdge) {
       keyboardActive = false;
-      try { canvas.setPointerCapture(e.pointerId); } catch { /* bỏ qua */ }
+      // KHÔNG setPointerCapture: bắt pointer là trình duyệt gửi mọi pointerup về canvas, khiến
+      // nút nằm dưới ngón tay (vd "Bỏ qua" của hướng dẫn) có thể mất cú thả → không phát `click`
+      // (người dùng phải bấm 2 lần). Kéo-huỷ đã được xử lý qua sự kiện pointerup trên canvas.
       hoverEdge = pointerDownEdge;
       render(false);
     }

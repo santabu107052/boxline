@@ -27,8 +27,8 @@ export const TUTORIAL_STEPS = {
       decoyEdges: [],
       aiMoves: [],
       title: 'Bước 1/5',
-      instruction: 'Bấm vào một đoạn thẳng để tô nó.',
-      hint: 'Mỗi lần chỉ tô được một đoạn.',
+      instruction: 'Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.',
+      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.',
       successLine: 'Xong. Lượt chuyển sang máy.',
       advanceOn: 'randomEdgeChosen',
       advanceDelayMs: 700,
@@ -45,7 +45,7 @@ export const TUTORIAL_STEPS = {
       decoyEdges: [],
       aiMoves: [],
       title: 'Bước 2/5',
-      instruction: 'Ô góc này còn thiếu một cạnh. Bấm cạnh còn trống đó.',
+      instruction: 'Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.',
       hint: 'Kín 4 cạnh là mình được ô.',
       successLine: 'Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.',
       advanceOn: 'boxCaptured',
@@ -70,7 +70,7 @@ export const TUTORIAL_STEPS = {
       },
       aiDelayMs: 600,
       title: 'Bước 3/5',
-      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.',
+      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.',
       hint: 'Đây là lần đi thứ hai liên tiếp của bạn.',
       successLine: 'Đó là chơi luân phiên: hết lượt thì đến máy.',
       advanceOn: 'turnEnded',
@@ -109,7 +109,7 @@ export const TUTORIAL_STEPS = {
       aiMoves: [],
       controls: ['timeLimit', 'boardSize', 'difficulty'],
       title: 'Bước 5/5',
-      instruction: 'Viền xung quanh đã tô sẵn, bạn không cần tô viền.',
+      instruction: 'Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.',
       hint: 'Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.',
       successLine: 'Hết hướng dẫn. Chơi ván đầu tiên nhé!',
       advanceOn: 'optionsExplored',
@@ -154,7 +154,8 @@ export const QUICK_GUIDE = Object.freeze({
       id: 1,
       title: 'Tô một đoạn thẳng',
       text: 'Mỗi lượt, bạn tô một đoạn thẳng còn trống.',
-      // Minh hoạ: bàn 3×3, viền ngoài đậm, một cạnh dọc ở giữa bên trái vừa tô màu xanh dương.
+      // Minh hoạ: bàn 3×3 CHỈ có các chấm (không có viền vẽ sẵn), một cạnh dọc ở giữa bên trái
+      // vừa tô màu xanh dương.
       illustration: 'edge',
       // §4: "một cạnh dọc ở giữa bên trái vừa tô màu xanh dương" → cạnh dọc [0,1,'V'].
       seedEdges: [[0, 1, 'V']],
@@ -258,7 +259,7 @@ export const GLOSSARY = Object.freeze({
   metaphor:
     'Mỗi ô là một cái hộp, cạnh là thanh ghép của nắp hộp. Ghép đủ 4 thanh thì hộp đóng lại và phần thưởng là của mình.',
   metaphorCaveat:
-    'Lưu ý: viền ngoài là một thanh có sẵn, nên ô ở góc chỉ cần 3 thanh là kín.',
+    'Lưu ý: mọi ô đều cần đủ 4 cạnh do hai bên tô — kể cả ô ở góc. Bàn chỉ có các chấm, không có sẵn cạnh nào.',
   entries: [
     {
       term: 'Cạnh',
@@ -271,9 +272,9 @@ export const GLOSSARY = Object.freeze({
       metaphor: 'Một cái hộp.',
     },
     {
-      term: 'Viền ngoài',
-      plain: 'Cạnh nằm ở mép bàn. Đã tô sẵn, không ai tô lại, không tính điểm.',
-      metaphor: 'Khung đỡ có sẵn của cả cái kệ — không phải hộp của ai.',
+      term: 'Mép bàn',
+      plain: 'Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối.',
+      metaphor: 'Mép của tờ giấy — không phải thanh ghép của hộp nào.',
     },
     {
       term: 'Giữ lượt',

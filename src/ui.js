@@ -1307,6 +1307,9 @@ export function createUI(deps = {}) {
     tutFinishBtn.addEventListener('click', () => emit('tutorialFinish'));
     resultNewBtn.addEventListener('click', () => emit('resultNew'));
     resultMenuBtn.addEventListener('click', () => emit('resultMenu'));
+    // LỖI ĐÃ SỬA (14/11): hai nút của màn "Hướng dẫn nhanh" trước đây KHÔNG được gắn sự kiện
+    // (chỉ nút × mới có) → bấm "Bỏ qua" / "Chơi thử Tutorial" không phản hồi, người dùng phải bấm
+    // nhiều lần mới vào được game.
     guideStartBtn.addEventListener('click', () => emit('guideStart'));
     guideSkipBtn.addEventListener('click', () => emit('guideSkip'));
     guideCloseBtn.addEventListener('click', () => emit('guideClose'));

@@ -66,8 +66,8 @@ mục 10.
   lượt chuyển sang bên kia** (nếu chưa kín ô).
 - **Bàn lúc vào bước:** bàn 3×3 **trống hoàn toàn** (chỉ có viền ngoài). Không cạnh trong nào được tô.
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Bấm vào một đoạn thẳng để tô nó.`
-  - Nhãn phụ (dưới câu trên, cỡ nhỏ hơn): `Mỗi lần chỉ tô được một đoạn.`
+  - Hướng dẫn: `Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.`
+  - Nhãn phụ (dưới câu trên, cỡ nhỏ hơn): `Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.`
 - **Vùng được phép bấm:** 6 cạnh ngang của **hai hàng giữa** để người chơi dễ trúng, không bị vướng
   mép bàn (trong thực tế chấm thử, tô ở `[1, 0, 'H']` cho kết quả sạch nhất vì không dựng sẵn ô 3 cạnh;
   danh sách đầy đủ ở mục 3):
@@ -91,7 +91,7 @@ mục 10.
   cạnh dưới), và chỉ còn **đúng một** cạnh trong để kín ô: `[0,1,'V']` (cạnh phải). `[2,1,'H']` chỉ để bàn
   trông như đã chơi dở, không ảnh hưởng ô `(0,0)`.
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Ô góc này còn thiếu một cạnh. Bấm cạnh còn trống đó.`
+  - Hướng dẫn: `Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.`
   - Nhãn phụ: `Kín 4 cạnh là mình được ô.`
 - **Vùng được phép bấm:** `[0,1,'V']` (duy nhất).
 - **Điều kiện qua bước:** người chơi bấm `[0,1,'V']` → ô `(0,0)` đủ 4 cạnh → `boxCaptured(box=(0,0), byPlayer)`.
@@ -113,7 +113,7 @@ mục 10.
   *(Đây là trạng thái dựng bằng `seedEdges`, không cần chạy tiếp từ bước 2 — Dev đặt bàn theo đúng seed
   này để kịch bản luôn sạch.)*
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.`
+  - Hướng dẫn: `Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.`
   - Nhãn phụ: `Đây là lần đi thứ hai liên tiếp của bạn.`
 - **Vùng được phép bấm:** đúng **hai** cạnh, chọn sao cho lượt đi của máy xong thì bàn **vẫn sạch**
   (không sinh ô 3 cạnh nào): `[2,1,'H']` hoặc `[1,2,'V']` — đã kiểm bằng mô phỏng.
@@ -166,7 +166,7 @@ mục 10.
 - **Thiết kế:** đây là bước **chỉ xem** — **không** phải đọc chữ rồi bấm "Tiếp"; người chơi **bấm vào
   chính các nút thật** trong thanh tùy chọn để tận tay thấy chúng đổi.
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Viền xung quanh đã tô sẵn, bạn không cần tô viền.`
+  - Hướng dẫn: `Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.`
   - Nhãn phụ: `Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.`
 - **Vùng được phép bấm:** ba nút thật trong thanh tùy chọn — `Thời gian mỗi lượt`, `Kích thước bàn`,
   `Độ khó`. Bấm nút nào thì control đó **mở ra và cho dùng thật** (đổi giá trị được), nhưng thay đổi
@@ -245,8 +245,8 @@ mục 10.
       "decoyEdges": [],
       "aiMoves": [],
       "title": "Bước 1/5",
-      "instruction": "Bấm vào một đoạn thẳng để tô nó.",
-      "hint": "Mỗi lần chỉ tô được một đoạn.",
+      "instruction": "Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.",
+      "hint": "Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.",
       "successLine": "Xong. Lượt chuyển sang máy.",
       "advanceOn": "randomEdgeChosen",
       "advanceDelayMs": 700
@@ -263,7 +263,7 @@ mục 10.
       "decoyEdges": [],
       "aiMoves": [],
       "title": "Bước 2/5",
-      "instruction": "Ô góc này còn thiếu một cạnh. Bấm cạnh còn trống đó.",
+      "instruction": "Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.",
       "hint": "Kín 4 cạnh là mình được ô.",
       "successLine": "Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.",
       "advanceOn": "boxCaptured",
@@ -288,7 +288,7 @@ mục 10.
       },
       "aiDelayMs": 600,
       "title": "Bước 3/5",
-      "instruction": "Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.",
+      "instruction": "Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.",
       "hint": "Đây là lần đi thứ hai liên tiếp của bạn.",
       "successLine": "Đó là chơi luân phiên: hết lượt thì đến máy.",
       "advanceOn": "turnEnded",
@@ -327,7 +327,7 @@ mục 10.
       "aiMoves": [],
       "controls": ["timeLimit", "boardSize", "difficulty"],
       "title": "Bước 5/5",
-      "instruction": "Viền xung quanh đã tô sẵn, bạn không cần tô viền.",
+      "instruction": "Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.",
       "hint": "Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.",
       "successLine": "Hết hướng dẫn. Chơi ván đầu tiên nhé!",
       "advanceOn": "optionsExplored",
@@ -438,14 +438,14 @@ hộp đóng lại và phần thưởng là của mình.**
 |---|---|---|
 | **Cạnh** | Đoạn thẳng nối hai chấm. Tô một cạnh mỗi lượt. | Một **thanh ghép** của nắp hộp. |
 | **Ô** | Hình vuông do 4 cạnh ghép lại. | Một **cái hộp**. |
-| **Viền ngoài** | Cạnh nằm ở mép bàn. Đã tô sẵn, không ai tô lại, không tính điểm. | **Khung đỡ** có sẵn của cả cái kệ — không phải hộp của ai. |
+| **Mép bàn** | Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối. | **Mép tờ giấy** — không phải thanh ghép của hộp nào. |
 | **Giữ lượt / combo** | Kín được ô thì được đi ngay một lần nữa, không mất lượt. | Đóng xong một hộp thì **được chơi thêm lượt** như phần thưởng. |
 | **Cạnh thứ 3 (cạnh xấu)** | Cạnh làm cho một ô chỉ còn thiếu 1 cạnh. Tô nó = dọn sẵn ô cho đối thủ. | Bạn **hé nắp hộp** lên — người sau chỉ việc đóng lại và lấy hộp. |
 | **Chuỗi (chain)** | Một dãy ô dính nhau, mỗi lần đóng ô này lại mở sẵn ô kế tiếp. Ai đóng ô đầu chuỗi thì ăn gần cả dãy. | Một **dãy hộp xếp liền**, mở hộp này là lộ ra hộp sau. |
 
-**Ẩn dụ này đúng tới đâu:** đúng ở chỗ "ghép đủ 4 thanh mới được hộp" và "mở hộp thì lộ hộp sau". Nó
-**không** nói được rằng viền đã là 1 thanh sẵn (nên ô ở góc chỉ cần 3 thanh của mình) — Dev lưu ý đừng
-dùng hình ảnh hộp có 4 thanh rời nhau ở góc bàn, dễ gây hiểu sai.
+**Ẩn dụ này đúng tới đâu:** đúng ở chỗ "ghép đủ 4 thanh mới được hộp" và "mở hộp thì lộ hộp sau".
+Bàn **không còn viền vẽ sẵn** (14/11): mọi ô — kể cả ô ở góc — đều cần **đủ 4 cạnh do hai bên tô**.
+Dev tuyệt đối không vẽ sẵn khung/viền để tránh người chơi hiểu nhầm là ô góc chỉ cần 3 cạnh.
 
 ---
 
