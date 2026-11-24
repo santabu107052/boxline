@@ -102,9 +102,18 @@ export function createRenderer(canvas, deps = {}) {
 
   function measure() {
     const rect = wrapper.getBoundingClientRect ? wrapper.getBoundingClientRect() : null;
-    const w = Math.max(0, Math.round((rect ? rect.width : wrapper.clientWidth) || 0));
-    const h = Math.max(0, Math.round((rect ? rect.height : wrapper.clientHeight) || 0));
-    return { w, h };
+    let w = (rect ? rect.width : wrapper.clientWidth) || 0;
+    let h = (rect ? rect.height : wrapper.clientHeight) || 0;
+    if (wrapper !== canvas && typeof getComputedStyle === 'function') {
+      const cs = getComputedStyle(wrapper);
+      const px = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0)
+        + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0);
+      const py = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0)
+        + (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
+      w -= px;
+      h -= py;
+    }
+    return { w: Math.max(0, Math.floor(w)), h: Math.max(0, Math.floor(h)) };
   }
 
   function resize(force = false) {
@@ -172,8 +181,6 @@ export function createRenderer(canvas, deps = {}) {
    *
    * - Tab ẩn (`document.hidden`): KHÔNG xếp thêm khung và KHÔNG vẽ (tiết kiệm pin, §7.3).
    *   Khi tab hiện lại, `visibilitychange` vẽ nốt trạng thái cuối / tiếp tục animation.
-   * - `deps.onInputTick` (nếu có): gọi mỗi khung để main.js xả input đang chờ sớm hơn
-   *   thay vì chờ hết animation (input không bị khoá — §6.6).
    */
   function startLoop() {
     if (rafId || destroyed) return;
@@ -188,9 +195,6 @@ export function createRenderer(canvas, deps = {}) {
       const now = performance.now();
       anims = anims.filter((a) => now - a.t0 < a.dur);
       if (lastState) paint(now);
-      if (typeof deps.onInputTick === 'function') {
-        try { deps.onInputTick(); } catch { /* input không bao giờ làm chết vòng vẽ */ }
-      }
       if (anims.length) rafId = requestAnimationFrame(frame);
       else if (typeof deps.onFrame === 'function') deps.onFrame(0);
     };

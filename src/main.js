@@ -332,21 +332,7 @@ function boot() {
 
   // Hàng đợi input khi đang animate (DESIGN §6.6: "input được xếp hàng đợi và xử lý ngay sau
   // animation kết thúc — không khoá người chơi"). Animation dài nhất ≈ 160+260+180ms (combo tới
-  // ~700ms); nước tiếp theo chỉ chờ tới frame đầu tiên mà KHÔNG còn animation.
-  // QUAN TRỌNG: chỉ áp cho input thật từ pointer/bàn phím. API `__game.playEdge/playLegalEdge`
-  // được giữ đồng bộ tuyệt đối (test, README và bộ chụp ảnh QC gọi 6 nước liên tiếp rồi chụp ngay).
-  let pendingPlayerInput = null; // { edge }
-  function flushPlayerInput() {
-    if (!pendingPlayerInput) return;
-    const p = pendingPlayerInput;
-    pendingPlayerInput = null;
-    commitMove(p.edge, { byAi: false });
-  }
-
-  const renderer = createRenderer(ui.elements.canvas, {
-    onInputTick: flushPlayerInput,
-    onFrame: flushPlayerInput,
-  });
+  const renderer = createRenderer(ui.elements.canvas);
 
   /* ------------------------------------------------------------- State */
 
@@ -372,6 +358,8 @@ function boot() {
   let focusEdge = null;
   let hoverEdge = null;
   let pointerDownEdge = null;
+  let pointerDownPos = null;
+  let pointerDownId = null;
   let warnBox = null;
   let warnFlashUntil = 0;
   let tutorialAdvanceTimer = 0;
@@ -638,11 +626,6 @@ function boot() {
     }
     if (!isLegal(game, edge)) return false;
     if (!currentIsHuman() && !opts.byAi) return false;
-    // Đang animate → xếp hàng đợi (§6.6); xả ở khung kế tiếp của vòng vẽ (≈16ms).
-    if (!opts.byAi && renderer.animating) {
-      pendingPlayerInput = { edge };
-      return true;
-    }
     const res = applyMove(game, edge);
     if (!res.ok) return false;
     interact(res);
@@ -822,7 +805,9 @@ function boot() {
 
   function launchGame(m, firstPlayer) {
     gameId++;
-    pendingPlayerInput = null;
+    pointerDownEdge = null;
+    pointerDownPos = null;
+    pointerDownId = null;
     match = m;
     game = createGame({ n: m.size, first: firstPlayer });
     hintLeft = HINT_LIMIT;
@@ -876,7 +861,9 @@ function boot() {
 
   function goMenu() {
     gameId++;
-    pendingPlayerInput = null;
+    pointerDownEdge = null;
+    pointerDownPos = null;
+    pointerDownId = null;
     globalThis.clearInterval(clockTimer);
     globalThis.clearTimeout(aiTimer);
     globalThis.clearTimeout(tutorialAdvanceTimer);
@@ -1161,7 +1148,9 @@ function boot() {
   }
 
   function startTutorial() {
-    pendingPlayerInput = null;
+    pointerDownEdge = null;
+    pointerDownPos = null;
+    pointerDownId = null;
     globalThis.clearTimeout(tutorialAdvanceTimer);
     globalThis.clearTimeout(tutorialAiTimer);
     tutorial = { active: true, index: 0, board4: null, touchedControl: false, aiMoved: false };
@@ -1396,35 +1385,41 @@ function boot() {
 
   /* ---------------------------------------------------------- Input */
 
-  function hitTest(clientX, clientY) {
+  function hitTest(clientX, clientY, { onlyLegal = false } = {}) {
     if (!game) return null;
     const rect = ui.elements.canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    if (rect.width <= 0 || rect.height <= 0) return null;
     const geom = renderer.geometry();
     if (geom.step <= 0) return null;
+    const scaleX = geom.cssW > 0 ? geom.cssW / rect.width : 1;
+    const scaleY = geom.cssH > 0 ? geom.cssH / rect.height : 1;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
     const n = game.n;
     // Vị trí trong ô lưới điểm gần nhất để biết đang gần cạnh ngang hay dọc.
     const fx = (x - geom.originX) / geom.step;
     const fy = (y - geom.originY) / geom.step;
     const dx = fx - Math.round(fx);
     const dy = fy - Math.round(fy);
-    const hitR = Math.min(28, geom.step * CANVAS_HIT_RATIO);
+    const maxDist = Math.min(26, geom.step * 0.46);
     const candidates = [];
     // Cạnh ngang gần nhất: [round(fy), floor(fx), 'H']
     candidates.push({ edge: [Math.round(fy), Math.floor(fx), 'H'], dist: Math.abs(dy) * geom.step, along: Math.abs(dx) });
     // Cạnh dọc gần nhất: [floor(fy), round(fx), 'V']
     candidates.push({ edge: [Math.floor(fy), Math.round(fx), 'V'], dist: Math.abs(dx) * geom.step, along: Math.abs(dy) });
     candidates.forEach((c) => {
-      c.okAlong = c.along <= 0.5 + 0.02;
-      c.okDist = c.dist <= hitR / 2 + 2;
+      c.okAlong = c.along <= 0.5 + 0.08;
+      c.okDist = c.dist <= maxDist;
     });
-    const valid = candidates.filter((c) => c.okAlong && c.okDist && inRange(c.edge, n));
+    const valid = candidates.filter((c) => {
+      if (!c.okAlong || !c.okDist || !inRange(c.edge, n)) return false;
+      if (onlyLegal && !isLegal(game, c.edge)) return false;
+      return true;
+    });
     if (!valid.length) return null;
     valid.sort((a, b) => a.dist - b.dist);
     return valid[0].edge;
   }
-  const CANVAS_HIT_RATIO = 0.6;
 
   function inRange(edge, n) {
     const [r, c, o] = edge;
@@ -1437,8 +1432,7 @@ function boot() {
   canvas.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return; // mobile: không preview khi kéo (tránh loạn)
     if (!game || screen !== 'play') return;
-    const edge = hitTest(e.clientX, e.clientY);
-    const legalEdge = edge && isLegal(game, edge) ? edge : null;
+    const legalEdge = hitTest(e.clientX, e.clientY, { onlyLegal: true });
     const next = legalEdge && (!isTutorialBoard() || allowedNow(legalEdge) || isDecoy(legalEdge)) ? legalEdge : null;
     if ((hoverEdge && !next) || (!hoverEdge && next) || (hoverEdge && next && edgeKey(hoverEdge) !== edgeKey(next))) {
       hoverEdge = next;
@@ -1457,8 +1451,11 @@ function boot() {
     if (!game || screen !== 'play') return;
     if (!currentIsHuman()) return;
     if (boardLocked()) return; // bước 5 tutorial: bàn khoá, nút Xong nằm dưới bàn
-    const edge = hitTest(e.clientX, e.clientY);
-    pointerDownEdge = edge && isLegal(game, edge) ? edge : null;
+    if (pointerDownId !== null) return; // chống multi-touch đè lên ngón đang giữ
+    const edge = hitTest(e.clientX, e.clientY, { onlyLegal: true });
+    pointerDownEdge = edge;
+    pointerDownPos = edge ? { x: e.clientX, y: e.clientY } : null;
+    pointerDownId = edge ? e.pointerId : null;
     if (pointerDownEdge) {
       keyboardActive = false;
       // KHÔNG setPointerCapture: bắt pointer là trình duyệt gửi mọi pointerup về canvas, khiến
@@ -1471,11 +1468,18 @@ function boot() {
 
   canvas.addEventListener('pointerup', (e) => {
     if (!pointerDownEdge) return;
-    const edge = hitTest(e.clientX, e.clientY);
+    if (pointerDownId !== null && e.pointerId !== pointerDownId) return;
     const start = pointerDownEdge;
+    const downPos = pointerDownPos;
     pointerDownEdge = null;
-    // Kéo-huỷ: thả ra khỏi cạnh đã chọn thì không đi.
-    if (!edge || edgeKey(edge) !== edgeKey(start)) {
+    pointerDownPos = null;
+    pointerDownId = null;
+    const edge = hitTest(e.clientX, e.clientY, { onlyLegal: true });
+    const geom = renderer.geometry();
+    const dragDist = downPos ? Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y) : 0;
+    const cancelThreshold = Math.max(18, geom.step * 0.42);
+    // Kéo-huỷ: chỉ huỷ khi người chơi kéo tay ra xa khỏi vị trí chạm ban đầu VÀ rời khỏi cạnh đã chọn.
+    if ((!edge || edgeKey(edge) !== edgeKey(start)) && dragDist > cancelThreshold) {
       hoverEdge = null;
       render();
       return;
@@ -1484,8 +1488,11 @@ function boot() {
     commitMove(start);
   });
 
-  canvas.addEventListener('pointercancel', () => {
+  canvas.addEventListener('pointercancel', (e) => {
+    if (pointerDownId !== null && e.pointerId !== pointerDownId) return;
     pointerDownEdge = null;
+    pointerDownPos = null;
+    pointerDownId = null;
     hoverEdge = null;
     render();
   });
@@ -1601,7 +1608,6 @@ function boot() {
       pauseClock();
     } else {
       resumeClock();
-      flushPlayerInput();
       scheduleAiIfNeeded();
     }
   });
