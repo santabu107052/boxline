@@ -28,7 +28,7 @@ export const TUTORIAL_STEPS = {
       aiMoves: [],
       title: 'Bước 1/5',
       instruction: 'Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.',
-      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.',
+      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh nào nối giữa hai chấm cũng tô được.',
       successLine: 'Xong. Lượt chuyển sang máy.',
       advanceOn: 'randomEdgeChosen',
       advanceDelayMs: 700,
@@ -37,7 +37,7 @@ export const TUTORIAL_STEPS = {
       id: 2,
       goal: 'box',
       seedEdges: [
-        [1, 0, 'H'], [2, 1, 'H'],
+        [0, 0, 'H'], [0, 0, 'V'], [1, 0, 'H'],
       ],
       allowedEdges: [
         [0, 1, 'V'],
@@ -45,7 +45,7 @@ export const TUTORIAL_STEPS = {
       decoyEdges: [],
       aiMoves: [],
       title: 'Bước 2/5',
-      instruction: 'Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.',
+      instruction: 'Ô góc này đã có 3 cạnh, chỉ còn thiếu 1 cạnh nữa là kín. Bấm vào cạnh còn trống để đóng ô.',
       hint: 'Kín 4 cạnh là mình được ô.',
       successLine: 'Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.',
       advanceOn: 'boxCaptured',
@@ -55,7 +55,7 @@ export const TUTORIAL_STEPS = {
       id: 3,
       goal: 'turn',
       seedEdges: [
-        [1, 0, 'H'], [0, 1, 'V'],
+        [0, 0, 'H'], [0, 0, 'V'], [1, 0, 'H'], [0, 1, 'V'],
       ],
       allowedEdges: [
         [2, 1, 'H'], [1, 2, 'V'],
@@ -70,7 +70,7 @@ export const TUTORIAL_STEPS = {
       },
       aiDelayMs: 600,
       title: 'Bước 3/5',
-      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.',
+      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.',
       hint: 'Đây là lần đi thứ hai liên tiếp của bạn.',
       successLine: 'Đó là chơi luân phiên: hết lượt thì đến máy.',
       advanceOn: 'turnEnded',
@@ -80,7 +80,7 @@ export const TUTORIAL_STEPS = {
       id: 4,
       goal: 'avoid_third',
       seedEdges: [
-        [1, 1, 'H'], [2, 0, 'H'],
+        [2, 0, 'H'], [2, 0, 'V'], [3, 0, 'H'],
       ],
       allowedEdges: [
         [2, 1, 'H'], [1, 2, 'V'],
@@ -109,7 +109,7 @@ export const TUTORIAL_STEPS = {
       aiMoves: [],
       controls: ['timeLimit', 'boardSize', 'difficulty'],
       title: 'Bước 5/5',
-      instruction: 'Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.',
+      instruction: 'Bàn chỉ có các chấm tròn — bạn tự nối mọi cạnh giữa chúng, kể cả các cạnh ở mép bàn.',
       hint: 'Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.',
       successLine: 'Hết hướng dẫn. Chơi ván đầu tiên nhé!',
       advanceOn: 'optionsExplored',
@@ -166,9 +166,9 @@ export const QUICK_GUIDE = Object.freeze({
       id: 2,
       title: 'Kín 4 cạnh được một ô',
       text: 'Ô đủ 4 cạnh thì thuộc về người tô cạnh cuối, và người đó đi tiếp.',
-      // Minh hoạ: ô góc trên-trái đã tô kín, ruột xanh nhạt, dấu tick mảnh giữa ô.
+      // Minh hoạ: ô góc trên-trái đã tô kín 4 cạnh, ruột xanh nhạt, dấu tick mảnh giữa ô.
       illustration: 'box',
-      seedEdges: [[1, 0, 'H'], [0, 1, 'V']],
+      seedEdges: [[0, 0, 'H'], [0, 0, 'V'], [1, 0, 'H'], [0, 1, 'V']],
       seedOwner: 'A',
       highlightBox: [0, 0],
       showTick: true,
@@ -179,9 +179,8 @@ export const QUICK_GUIDE = Object.freeze({
       text: 'Để ô thiếu đúng 1 cạnh là dâng ô cho đối thủ.',
       // Minh hoạ: ô góc dưới-phải có 3 cạnh đã tô, viền ngoài cam mảnh + mũi tên cong chỉ ra xa.
       illustration: 'avoid',
-      // Ô góc dưới-phải (2,2) là ô ở GÓC nên chỉ cần 2 cạnh trong: tô 1 cạnh → còn thiếu đúng 1.
-      // Cạnh còn lại [2,2,'V'] là "cạnh thứ 3" đang bỏ ngỏ (dâng ô cho đối thủ).
-      seedEdges: [[2, 2, 'H']],
+      // Ô góc dưới-phải (2,2) có 3 cạnh đã tô, còn thiếu đúng 1 cạnh [2,2,'V'] là kín.
+      seedEdges: [[2, 2, 'H'], [3, 2, 'H'], [2, 3, 'V']],
       seedOwner: 'B',
       highlightBox: [2, 2],
       showAvoidArrow: true,
@@ -259,7 +258,7 @@ export const GLOSSARY = Object.freeze({
   metaphor:
     'Mỗi ô là một cái hộp, cạnh là thanh ghép của nắp hộp. Ghép đủ 4 thanh thì hộp đóng lại và phần thưởng là của mình.',
   metaphorCaveat:
-    'Lưu ý: mọi ô đều cần đủ 4 cạnh do hai bên tô — kể cả ô ở góc. Bàn chỉ có các chấm, không có sẵn cạnh nào.',
+    'Lưu ý: mọi ô đều cần đủ 4 cạnh do hai bên tô — kể cả ô ở góc và mép bàn. Bàn chỉ có các chấm, không có sẵn cạnh nào.',
   entries: [
     {
       term: 'Cạnh',
@@ -273,8 +272,8 @@ export const GLOSSARY = Object.freeze({
     },
     {
       term: 'Mép bàn',
-      plain: 'Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối.',
-      metaphor: 'Mép của tờ giấy — không phải thanh ghép của hộp nào.',
+      plain: 'Cạnh nằm sát mép ngoài cùng của bàn. Vẫn tô và tính điểm bình thường như mọi cạnh khác.',
+      metaphor: 'Thanh ghép ở rìa ngoài của khung hộp — vẫn phải tự ghép mới kín được hộp ở góc và mép.',
     },
     {
       term: 'Giữ lượt',

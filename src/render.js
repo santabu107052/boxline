@@ -12,7 +12,7 @@
  *      setThemeColors(), destroy(), geometry() }
  */
 import { CANVAS, MOTION } from './config.js';
-import { boxMissing, edgeKey, isInteriorEdge } from './engine.js';
+import { boxMissing, edgeKey, isOnBoard } from './engine.js';
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
@@ -270,9 +270,8 @@ export function createRenderer(canvas, deps = {}) {
     // 1) Xoá sạch theo kích thước CSS px.
     ctx.clearRect(0, 0, cssW, cssH);
 
-    // 3) KHÔNG còn viền ngoài vẽ sẵn (người dùng yêu cầu 14/11: "không có sẵn viền cho các ván chơi").
-    //    Ván mới chỉ có các điểm (dot) — người chơi tự nối cạnh, tô kín ô thì ô hiện khung.
-    //    (Luật vẫn giữ: cạnh nằm trên mép bàn không chơi được — xem engine.isInteriorEdge.)
+    // 3) KHÔNG còn viền ngoài vẽ sẵn (Dots & Boxes chuẩn: không có sẵn viền).
+    //    Ván mới chỉ có các điểm (dot) — mọi cạnh trên bàn (kể cả mép bàn) đều chơi được.
 
     // 4) Ô đã tô (fill tint + viền bo góc + hoa tiết + nhãn).
     for (let br = 0; br < n; br++) {
@@ -760,4 +759,4 @@ export function openBoxCount(state) {
   return k;
 }
 
-export { isInteriorEdge, boxMissing, edgeKey };
+export { isOnBoard, boxMissing, edgeKey };

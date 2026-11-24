@@ -129,7 +129,9 @@ test('cùng seed → cùng nước đi (tất định, để replay được)', 
 
 test('medium: luôn ăn ô khi có thể (greedy)', () => {
   const g = createGame({ n: 3 });
-  // Ô góc (0,0) còn 1 cạnh → [0,1,'V'] là nước ăn.
+  // Ô góc (0,0) đủ 3 cạnh, còn 1 cạnh → [0,1,'V'] là nước ăn.
+  applyMove(g, [0, 0, 'H']);
+  applyMove(g, [0, 0, 'V']);
   applyMove(g, [1, 0, 'H']);
   const { captures } = analyzePosition(g);
   assert.ok(captures.length >= 1, 'phải có nước ăn');
@@ -199,7 +201,7 @@ test('playGame: ván tự chơi xong, tổng điểm = n², có trường maxThi
     const r = playGame({ n, levelA: 'hard', levelB: 'easy', seedA: 1, seedB: 2 });
     assert.equal(r.A + r.B, n * n);
     assert.ok(['A', 'B', 'draw'].includes(r.winner));
-    assert.equal(r.moves, 2 * n * (n - 1));
+    assert.equal(r.moves, 2 * n * (n + 1));
     assert.ok(Number.isFinite(r.maxThinkMs));
   }
 });
@@ -209,7 +211,7 @@ test('analyzePosition: captures và safe không trùng nhau, luôn là cạnh h�
   const rand = rng(4);
   for (let i = 0; i < 5; i++) applyMove(g, legalEdges(g)[Math.floor(rand() * legalEdges(g).length)]);
   const { legal, captures, safe } = analyzePosition(g);
-  assert.equal(legal.length, 2 * 4 * 3 - g.moveCount);
+  assert.equal(legal.length, 2 * 4 * 5 - g.moveCount);
   for (const c of captures) {
     assert.equal(isLegal(g, c.edge), true);
     assert.ok(boxesClosedBy(g, c.edge).length > 0);
@@ -234,5 +236,5 @@ test('easy: vẫn tôn trọng luật (không bao giờ tô cạnh đã tô / c�
     seen.add(k);
     assert.equal(applyMove(g, mv).ok, true);
   }
-  assert.equal(seen.size, 12);
+  assert.equal(seen.size, 24);
 });

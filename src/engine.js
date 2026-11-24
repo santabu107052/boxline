@@ -7,14 +7,15 @@
  *   - ngang `[r, c, 'H']` nối điểm (r, c) với (r, c+1)  → 0 ≤ r ≤ n, 0 ≤ c < n
  *   - dọc   `[r, c, 'V']` nối điểm (r, c) với (r+1, c)  → 0 ≤ r < n, 0 ≤ c ≤ n
  *
- * Viền ngoài (cạnh nằm trên mép bàn) đã tô sẵn: KHÔNG bao giờ nằm trong danh sách cạnh chơi được,
- * không tính điểm, không vẽ như "còn trống".
+ * Luật Dots & Boxes chuẩn (không có viền ngoài tô sẵn): TẤT CẢ `2n(n+1)` cạnh hợp lệ
+ * về mặt hình học (kể cả cạnh nằm trên mép bàn) đều chơi được. Mọi ô (góc, mép, giữa)
+ * đều cần đủ 4 cạnh mới kín và tính điểm.
  *
  * Ô (br, bc) có 4 cạnh:
- *   trên  [br,   bc,   'H']   (viền nếu br === 0)
- *   dưới  [br+1, bc,   'H']   (viền nếu br + 1 === n)
- *   trái  [br,   bc,   'V']   (viền nếu bc === 0)
- *   phải  [br,   bc+1, 'V']   (viền nếu bc + 1 === n)
+ *   trên  [br,   bc,   'H']
+ *   dưới  [br+1, bc,   'H']
+ *   trái  [br,   bc,   'V']
+ *   phải  [br,   bc+1, 'V']
  */
 
 export const PLAYERS = ['A', 'B'];
@@ -43,7 +44,7 @@ export function edgeEquals(a, b) {
   return x[0] === y[0] && x[1] === y[1] && x[2] === y[2];
 }
 
-/** Cạnh là cạnh trong (chơi được) hay cạnh viền? */
+/** Cạnh nằm bên trong lưới (hình học: không nằm trên mép ngoài cùng). */
 export function isInteriorEdge(edge, n) {
   const e = normEdge(edge);
   if (!e) return false;
@@ -52,7 +53,7 @@ export function isInteriorEdge(edge, n) {
   return c >= 1 && c <= n - 1 && r >= 0 && r < n;
 }
 
-/** Cạnh hợp lệ về hình học (viền hoặc trong). */
+/** Cạnh hợp lệ về hình học (cả cạnh trong lẫn cạnh mép bàn). */
 export function isOnBoard(edge, n) {
   const e = normEdge(edge);
   if (!e) return false;
@@ -61,11 +62,19 @@ export function isOnBoard(edge, n) {
   return c >= 0 && c <= n && r >= 0 && r < n;
 }
 
-/** Cạnh trên bàn nhưng không phải cạnh trong → viền ngoài (đã tô sẵn). */
+/** Cạnh nằm trên mép ngoài cùng của bàn (hình học: trên bàn nhưng không phải cạnh trong). */
 export function isBorderEdge(edge, n) {
   const e = normEdge(edge);
   if (!e) return false;
   return isOnBoard(e, n) && !isInteriorEdge(e, n);
+}
+
+/** Danh sách toàn bộ cạnh chơi được trên bàn n×n (gồm cả cạnh mép bàn, tổng 2n(n+1)). */
+export function allBoardEdges(n) {
+  const list = [];
+  for (let r = 0; r <= n; r++) for (let c = 0; c < n; c++) list.push([r, c, 'H']);
+  for (let c = 0; c <= n; c++) for (let r = 0; r < n; r++) list.push([r, c, 'V']);
+  return list;
 }
 
 /** Danh sách toàn bộ cạnh trong (theo thứ tự hàng → cột: ngang hết, rồi dọc hết). */
@@ -118,39 +127,31 @@ export function createGame({ n, first = 'A', state = null } = {}) {
 export function boxState(state, br, bc) {
   const n = state.n;
   if (br < 0 || bc < 0 || br >= n || bc >= n) return { vs: 0, owner: null, count: 0 };
-  let vs = 0;          // số cạnh là viền ngoài (đã tô sẵn)
-  let filled = 0;      // số cạnh TRONG đã tô
+  let filled = 0;
   let ownerIn = null;
   for (const e of boxEdges(br, bc)) {
-    if (isInteriorEdge(e, n)) {
-      const p = state.edges.get(edgeKey(e));
-      if (p) {
-        filled++;
-        ownerIn = p;
-      }
-    } else {
-      vs++;
+    const p = state.edges.get(edgeKey(e));
+    if (p) {
+      filled++;
+      ownerIn = p;
     }
   }
-  const count = vs + filled; // tổng cạnh đã "có" (viền tính sẵn)
-  // Ô CHỈ có chủ khi đã kín 4 cạnh (viền tính sẵn). Ô dở dang thì owner = null,
-  // kể cả khi đã có cạnh được tô (ownerIn chỉ dùng để suy ra chủ khi khôi phục ván).
-  const closed = count === 4;
-  return { vs, owner: closed ? (state.boxes[br * n + bc] || ownerIn) : null, count };
+  const closed = filled === 4;
+  return { vs: 0, owner: closed ? (state.boxes[br * n + bc] || ownerIn) : null, count: filled };
 }
 
-/** Các cạnh TRONG mà ô (br, bc) còn phải tô để kín (viền tính sẵn). */
+/** Các cạnh mà ô (br, bc) còn phải tô để kín (luôn là 4 cạnh). */
 export function requiredEdgesForBox(n, br, bc) {
-  return boxEdges(br, bc).filter((e) => isInteriorEdge(e, n));
+  return boxEdges(br, bc);
 }
 
-/** Ô còn thiếu bao nhiêu cạnh TRONG (ô góc: 2, ô mép: 3, ô giữa: 4). */
+/** Ô còn thiếu bao nhiêu cạnh (mọi ô mới đều thiếu 4 cạnh). */
 export function boxMissing(state, br, bc) {
   const n = state.n;
   if (br < 0 || bc < 0 || br >= n || bc >= n) return 4;
   let missing = 0;
   for (const e of boxEdges(br, bc)) {
-    if (isInteriorEdge(e, n) && !state.edges.has(edgeKey(e))) missing++;
+    if (!state.edges.has(edgeKey(e))) missing++;
   }
   return missing;
 }
@@ -160,18 +161,18 @@ export function isBoxClosed(state, br, bc) {
   return boxMissing(state, br, bc) === 0;
 }
 
-/** Cạnh chưa tô → hợp lệ để đi. */
+/** Cạnh chưa tô trên bàn → hợp lệ để đi. */
 export function isLegal(state, edge) {
   const e = normEdge(edge);
   if (!e) return false;
-  if (!isInteriorEdge(e, state.n)) return false;
+  if (!isOnBoard(e, state.n)) return false;
   return !state.edges.has(edgeKey(e));
 }
 
 /** Danh sách cạnh còn chơi được. */
 export function legalEdges(state) {
   const out = [];
-  for (const e of allInteriorEdges(state.n)) {
+  for (const e of allBoardEdges(state.n)) {
     if (!state.edges.has(edgeKey(e))) out.push(e);
   }
   return out;
@@ -200,7 +201,7 @@ export function thirdEdgeBoxes(state) {
     for (let bc = 0; bc < state.n; bc++) {
       if (boxMissing(state, br, bc) === 1) {
         const missing = boxEdges(br, bc).find(
-          (e) => isInteriorEdge(e, state.n) && !state.edges.has(edgeKey(e)),
+          (e) => !state.edges.has(edgeKey(e)),
         );
         out.push({ br, bc, edge: missing });
       }
@@ -245,7 +246,7 @@ export function boxesClosedBy(state, edge) {
 export function applyMove(state, edge) {
   const e = normEdge(edge);
   if (!e) return { ok: false, reason: 'invalid' };
-  if (!isInteriorEdge(e, state.n)) return { ok: false, reason: 'border' };
+  if (!isOnBoard(e, state.n)) return { ok: false, reason: 'outside' };
   const key = edgeKey(e);
   // Idempotent: gọi 2 lần cùng cạnh → lần 2 no-op.
   if (state.edges.has(key)) return { ok: false, reason: 'taken' };
@@ -343,6 +344,10 @@ export function getWinner(state) {
 
 export function remainingCount(state) {
   return legalEdges(state).length;
+}
+
+export function totalBoardEdges(n) {
+  return 2 * n * (n + 1);
 }
 
 export function totalInteriorEdges(n) {

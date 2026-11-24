@@ -10,8 +10,8 @@
 > - cạnh ngang `[r, c, 'H']` nối điểm `(r, c)` với `(r, c+1)` → `0 ≤ r ≤ n`, `0 ≤ c < n`;
 > - cạnh dọc `[r, c, 'V']` nối điểm `(r, c)` với `(r+1, c)` → `0 ≤ c ≤ n`, `0 ≤ r < n`.
 >
-> **Viền ngoài** (cạnh nằm trên mép bàn) đã được tô sẵn theo luật. Dev **không được** đưa cạnh viền
-> vào `allowedEdges`, không vẽ nó như "còn trống", không tính điểm từ nó.
+> **Luật Dots & Boxes chuẩn (không có viền tô sẵn):** mọi cạnh hợp lệ trên bàn `n×n` (`2n(n+1)` cạnh,
+> gồm cả cạnh nằm trên mép bàn) đều chơi được. Mọi ô (góc, mép, giữa) đều cần đủ **4 cạnh** mới kín.
 
 ---
 
@@ -64,13 +64,12 @@ mục 10.
 
 - **Mục tiêu học:** hiểu "tô một cạnh" = bấm vào một đoạn thẳng chưa tô; hiểu ngay là **tô xong thì
   lượt chuyển sang bên kia** (nếu chưa kín ô).
-- **Bàn lúc vào bước:** bàn 3×3 **trống hoàn toàn** (chỉ có viền ngoài). Không cạnh trong nào được tô.
+- **Bàn lúc vào bước:** bàn 3×3 **trống hoàn toàn** (chỉ có 4×4 chấm tròn, chưa có cạnh nào được tô).
 - **Câu chữ hiển thị (nguyên văn):**
   - Hướng dẫn: `Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.`
-  - Nhãn phụ (dưới câu trên, cỡ nhỏ hơn): `Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.`
-- **Vùng được phép bấm:** 6 cạnh ngang của **hai hàng giữa** để người chơi dễ trúng, không bị vướng
-  mép bàn (trong thực tế chấm thử, tô ở `[1, 0, 'H']` cho kết quả sạch nhất vì không dựng sẵn ô 3 cạnh;
-  danh sách đầy đủ ở mục 3):
+  - Nhãn phụ (dưới câu trên, cỡ nhỏ hơn): `Mỗi lần chỉ tô được một cạnh. Cạnh nào nối giữa hai chấm cũng tô được.`
+- **Vùng được phép bấm:** 6 cạnh ngang của **hai hàng giữa** để người chơi mới dễ bấm chính xác
+  (danh sách đầy đủ ở mục 3):
   `[1,0,'H']`, `[1,1,'H']`, `[1,2,'H']`, `[2,0,'H']`, `[2,1,'H']`, `[2,2,'H']`
 - **Điều kiện qua bước (event):** người chơi bấm **một** cạnh bất kỳ trong danh sách trên → `randomEdgeChosen`.
 - **Phản hồi khi đúng:** cạnh sáng lên nhanh (150 ms) theo màu người chơi; một âm "tách" nhẹ; thanh dưới
@@ -85,13 +84,11 @@ mục 10.
 ### Bước 2 — Tô cạnh thứ tư thì được ô và được đi tiếp
 
 - **Mục tiêu học:** ô có 4 cạnh; tô nốt cạnh **cuối cùng** thì ô thuộc về mình và **mình đi tiếp**.
-- **Bàn lúc vào bước:** ô góc trên-trái `(0, 0)` có **4 cạnh** nhưng chỉ cần **2 cạnh trong** được tô:
-  `[1,0,'H']` (dưới) và `[0,1,'V']`... **chưa**. Trên và trái là viền có sẵn; dưới là seed `[1,0,'H']`.
-  Vậy Dev dựng `seedEdges = [[1,0,'H'],[2,1,'H']]`: ô `(0,0)` khi đó có 3 cạnh (viền trên + viền trái +
-  cạnh dưới), và chỉ còn **đúng một** cạnh trong để kín ô: `[0,1,'V']` (cạnh phải). `[2,1,'H']` chỉ để bàn
-  trông như đã chơi dở, không ảnh hưởng ô `(0,0)`.
+- **Bàn lúc vào bước:** ô góc trên-trái `(0, 0)` có **3 cạnh đã tô** (`[0,0,'H']` trên, `[0,0,'V']` trái,
+  `[1,0,'H']` dưới), và chỉ còn **đúng một** cạnh để kín đủ 4 cạnh: `[0,1,'V']` (cạnh phải).
+  Vậy Dev dựng `seedEdges = [[0,0,'H'],[0,0,'V'],[1,0,'H']]`.
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.`
+  - Hướng dẫn: `Ô góc này đã có 3 cạnh, chỉ còn thiếu 1 cạnh nữa là kín. Bấm vào cạnh còn trống để đóng ô.`
   - Nhãn phụ: `Kín 4 cạnh là mình được ô.`
 - **Vùng được phép bấm:** `[0,1,'V']` (duy nhất).
 - **Điều kiện qua bước:** người chơi bấm `[0,1,'V']` → ô `(0,0)` đủ 4 cạnh → `boxCaptured(box=(0,0), byPlayer)`.
@@ -107,13 +104,12 @@ mục 10.
 
 - **Mục tiêu học:** hai bên **thay phiên** tô; ai kín được ô thì **không mất lượt**. "Được đi tiếp" nghĩa
   là chơi tiếp ngay, không phải chờ máy.
-- **Bàn lúc vào bước:** ô góc trên-trái `(0,0)` **đã kín** và thuộc về người chơi (đúng như bước 2 vừa
-  dạy). Chỉ cần tô 2 cạnh trong là `[1,0,'H']` (dưới) và `[0,1,'V']` (phải) — trên và trái là viền có sẵn.
-  Không có ô 3 cạnh nào trên bàn. Người chơi đang **giữ lượt**.
+- **Bàn lúc vào bước:** ô góc trên-trái `(0,0)` **đã kín đủ 4 cạnh** (`[0,0,'H']`, `[0,0,'V']`, `[1,0,'H']`,
+  `[0,1,'V']`) và thuộc về người chơi (đúng như bước 2 vừa dạy). Không có ô 3 cạnh nào trên bàn. Người chơi đang **giữ lượt**.
   *(Đây là trạng thái dựng bằng `seedEdges`, không cần chạy tiếp từ bước 2 — Dev đặt bàn theo đúng seed
   này để kịch bản luôn sạch.)*
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.`
+  - Hướng dẫn: `Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.`
   - Nhãn phụ: `Đây là lần đi thứ hai liên tiếp của bạn.`
 - **Vùng được phép bấm:** đúng **hai** cạnh, chọn sao cho lượt đi của máy xong thì bàn **vẫn sạch**
   (không sinh ô 3 cạnh nào): `[2,1,'H']` hoặc `[1,2,'V']` — đã kiểm bằng mô phỏng.
@@ -133,8 +129,8 @@ mục 10.
 
 - **Mục tiêu học:** nhận ra "cạnh thứ ba" — cạnh biến một ô thành *thiếu đúng 1 cạnh*, tức là **dâng ô
   cho đối thủ**. Học phản xạ: thấy ô đã 3 cạnh thì **đừng chạm vào ô đó**; chọn đi chỗ khác.
-- **Bàn lúc vào bước:** seed cố định `[1,1,'H']` và `[2,0,'H']`. Kết quả: ô góc dưới-trái `(2, 0)` đã có
-  **3 cạnh** (`[2,0,'H']` trên, `[2,0,'V']` trái là viền, `[3,0,'H']` dưới là viền) và **thiếu đúng
+- **Bàn lúc vào bước:** seed cố định `[2,0,'H']`, `[2,0,'V']` và `[3,0,'H']`. Kết quả: ô góc dưới-trái `(2, 0)` đã có
+  **3 cạnh** (`[2,0,'H']` trên, `[2,0,'V']` trái, `[3,0,'H']` dưới) và **thiếu đúng
   `[2,1,'V']`**. Đây là "cái hộp đã hé nắp". Bàn **không** có ô 3 cạnh nào khác.
 - **Câu chữ hiển thị (nguyên văn):**
   - Hướng dẫn: `Ô góc dưới-trái đã có 3 cạnh. Đừng tô cạnh cuối của ô đó — tô một cạnh khác an toàn hơn.`
@@ -157,16 +153,16 @@ mục 10.
 
 ---
 
-### Bước 5 — Viền ngoài đã tô sẵn và các tùy chọn
+### Bước 5 — Mép bàn và các tùy chọn
 
-- **Mục tiêu học:** hiểu viền là của bàn, không cần tô; biết chỗ để chỉnh **thời gian mỗi lượt**,
+- **Mục tiêu học:** hiểu mọi cạnh giữa hai chấm (kể cả ở mép bàn) đều tô được; biết chỗ để chỉnh **thời gian mỗi lượt**,
   **kích thước bàn**, **độ khó**.
-- **Bàn lúc vào bước:** bàn 3×3 với viền ngoài đã tô đậm (luôn vậy), có một lớp phủ mờ để người chơi
-  không bấm vào cạnh trong khi đang xem chú thích. Có thể để lại trạng thái bàn bước 4.
+- **Bàn lúc vào bước:** bàn 3×3 giữ nguyên trạng thái bước 4, có một lớp phủ mờ để người chơi
+  không bấm vào cạnh trong khi đang xem chú thích.
 - **Thiết kế:** đây là bước **chỉ xem** — **không** phải đọc chữ rồi bấm "Tiếp"; người chơi **bấm vào
   chính các nút thật** trong thanh tùy chọn để tận tay thấy chúng đổi.
 - **Câu chữ hiển thị (nguyên văn):**
-  - Hướng dẫn: `Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.`
+  - Hướng dẫn: `Bàn chỉ có các chấm tròn — bạn tự nối mọi cạnh giữa chúng, kể cả các cạnh ở mép bàn.`
   - Nhãn phụ: `Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.`
 - **Vùng được phép bấm:** ba nút thật trong thanh tùy chọn — `Thời gian mỗi lượt`, `Kích thước bàn`,
   `Độ khó`. Bấm nút nào thì control đó **mở ra và cho dùng thật** (đổi giá trị được), nhưng thay đổi
@@ -187,7 +183,7 @@ mục 10.
 | 2 | Kín ô | Cạnh thứ 4 = được ô + được đi tiếp | `[0,1,'V']` | `boxCaptured` |
 | 3 | Luân phiên | Hai bên thay phiên; kín ô thì không mất lượt | 1 cạnh an toàn bất kỳ | `turnEnded` + máy đi |
 | 4 | Cạnh thứ 3 | Đừng mở ô cho đối thủ | `[2,1,'H']` hoặc `[1,2,'V']` | `dangerousEdgeAvoided` |
-| 5 | Viền & tùy chọn | Viền có sẵn; chỗ chỉnh cài đặt | 1 trong 3 control (hoặc `Xong`) | `optionsExplored` / `finished` |
+| 5 | Mép bàn & tùy chọn | Tự nối mọi cạnh; chỗ chỉnh cài đặt | 1 trong 3 control (hoặc `Xong`) | `optionsExplored` / `finished` |
 
 ---
 
@@ -195,28 +191,28 @@ mục 10.
 
 ### Nguyên tắc dựng dữ liệu
 
-1. `seedEdges` = các cạnh **đã tô** khi bước bắt đầu (không tính viền ngoài — viền luôn ngầm hiểu).
+1. `seedEdges` = các cạnh **đã tô** khi bước bắt đầu (mọi cạnh đều có thể nằm ở trong hoặc trên mép bàn).
 2. `allowedEdges` = cạnh người chơi **được phép** bấm ở bước đó. Cạnh hợp lệ về luật nhưng không có trong
    danh sách → **không phản hồi**.
 3. `decoyEdges` = cạnh **cố ý** cho bấm và bị tính là **sai** (chỉ dùng ở bước 4).
 4. `aiMoves` = cạnh máy sẽ bấm, theo đúng thứ tự. Dev **không** để AI thật của trò tự chọn nước trong
    tutorial — luôn dùng mảng cứng này, nếu không kịch bản sẽ vỡ.
-5. Mọi dữ liệu dưới đây đã được đối chiếu bằng mô phỏng luật của BRIEF mục 4: không cạnh nào trùng,
-   không cạnh viền nào lọt vào danh sách chơi được.
+5. Mọi dữ liệu dưới đây đã được đối chiếu bằng mô phỏng luật chuẩn 4 cạnh: không cạnh nào trùng,
+   mọi cạnh trong `seedEdges`/`allowedEdges`/`decoyEdges` đều nằm trên bàn (`isOnBoard`).
 
 ### Bảng dữ liệu từng bước
 
 | Bước | `seedEdges` (đã tô) | Ô 3 cạnh có sẵn | `allowedEdges` | `decoyEdges` | `aiMoves` | Trạng thái sau khi qua bước |
 |---|---|---|---|---|---|---|
 | 1 | *(trống)* | không | `[1,0,'H']` `[1,1,'H']` `[1,2,'H']` `[2,0,'H']` `[2,1,'H']` `[2,2,'H']` | không | `[]` | Người chơi đã tô 1 cạnh ngang; điểm 0–0 |
-| 2 | `[1,0,'H']` `[2,1,'H']` | `(0,0)` thiếu `[0,1,'V']` | `[0,1,'V']` | không | `[]` | Ô `(0,0)` thuộc người chơi, điểm **1–0**, người chơi **giữ lượt** |
-| 3 | `[1,0,'H']` `[0,1,'V']` (ô `(0,0)` đã kín nhờ 2 viền) | không | `[2,1,'H']` `[1,2,'V']` | không | đi **sau** người chơi: `[1,2,'V']` nếu người chơi chọn `[2,1,'H']`, và ngược lại | Người chơi đi tiếp 1 cạnh → máy đi 1 cạnh → lượt về người chơi; bàn vẫn **sạch** (0 ô 3 cạnh) |
-| 4 | `[1,1,'H']` `[2,0,'H']` | `(2,0)` thiếu `[2,1,'V']` | `[2,1,'H']` `[1,2,'V']` | `[2,1,'V']` | `[]` | Người chơi đã né đúng; không ăn ô nào |
+| 2 | `[0,0,'H']` `[0,0,'V']` `[1,0,'H']` | `(0,0)` thiếu `[0,1,'V']` | `[0,1,'V']` | không | `[]` | Ô `(0,0)` thuộc người chơi, điểm **1–0**, người chơi **giữ lượt** |
+| 3 | `[0,0,'H']` `[0,0,'V']` `[1,0,'H']` `[0,1,'V']` (ô `(0,0)` đã kín đủ 4 cạnh) | không | `[2,1,'H']` `[1,2,'V']` | không | đi **sau** người chơi: `[1,2,'V']` nếu người chơi chọn `[2,1,'H']`, và ngược lại | Người chơi đi tiếp 1 cạnh → máy đi 1 cạnh → lượt về người chơi; bàn vẫn **sạch** (0 ô 3 cạnh) |
+| 4 | `[2,0,'H']` `[2,0,'V']` `[3,0,'H']` | `(2,0)` thiếu `[2,1,'V']` | `[2,1,'H']` `[1,2,'V']` | `[2,1,'V']` | `[]` | Người chơi đã né đúng; không ăn ô nào |
 | 5 | theo trạng thái bước 4 (xem ghi chú) | – | 3 control UI | không | `[]` | Kết thúc, mở ván thật 3×3 Dễ |
 
 > **Ghi chú máy đi ở bước 3 (bắt buộc đọc):** máy **không** đi ngay khi vào bước; máy đi **sau khi** người
-> chơi vừa tô xong cạnh của mình. Cặp `[2,1,'H']` / `[1,2,'V']` là cặp **duy nhất** giữ được bàn sạch ở
-> trạng thái này — đã kiểm bằng mô phỏng toàn bộ 12 cạnh trong × 12. Vì vậy `allowedEdges` của bước 3 chỉ
+> chơi vừa tô xong cạnh của mình. Cặp `[2,1,'H']` / `[1,2,'V']` giữ được bàn sạch ở
+> trạng thái này (không tạo ô 3 cạnh). Vì vậy `allowedEdges` của bước 3 chỉ
 > gồm đúng hai cạnh đó, và máy bấm cạnh còn lại. Không dùng "cạnh trống đầu tiên" tuỳ ý: có cạnh sẽ tạo
 > ra ô 3 cạnh và làm hỏng bài học "bàn đang sạch".
 
@@ -246,7 +242,7 @@ mục 10.
       "aiMoves": [],
       "title": "Bước 1/5",
       "instruction": "Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.",
-      "hint": "Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.",
+      "hint": "Mỗi lần chỉ tô được một cạnh. Cạnh nào nối giữa hai chấm cũng tô được.",
       "successLine": "Xong. Lượt chuyển sang máy.",
       "advanceOn": "randomEdgeChosen",
       "advanceDelayMs": 700
@@ -255,7 +251,7 @@ mục 10.
       "id": 2,
       "goal": "box",
       "seedEdges": [
-        [1, 0, "H"], [2, 1, "H"]
+        [0, 0, "H"], [0, 0, "V"], [1, 0, "H"]
       ],
       "allowedEdges": [
         [0, 1, "V"]
@@ -263,7 +259,7 @@ mục 10.
       "decoyEdges": [],
       "aiMoves": [],
       "title": "Bước 2/5",
-      "instruction": "Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.",
+      "instruction": "Ô góc này đã có 3 cạnh, chỉ còn thiếu 1 cạnh nữa là kín. Bấm vào cạnh còn trống để đóng ô.",
       "hint": "Kín 4 cạnh là mình được ô.",
       "successLine": "Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.",
       "advanceOn": "boxCaptured",
@@ -273,7 +269,7 @@ mục 10.
       "id": 3,
       "goal": "turn",
       "seedEdges": [
-        [1, 0, "H"], [0, 1, "V"]
+        [0, 0, "H"], [0, 0, "V"], [1, 0, "H"], [0, 1, "V"]
       ],
       "allowedEdges": [
         [2, 1, "H"], [1, 2, "V"]
@@ -288,7 +284,7 @@ mục 10.
       },
       "aiDelayMs": 600,
       "title": "Bước 3/5",
-      "instruction": "Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.",
+      "instruction": "Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.",
       "hint": "Đây là lần đi thứ hai liên tiếp của bạn.",
       "successLine": "Đó là chơi luân phiên: hết lượt thì đến máy.",
       "advanceOn": "turnEnded",
@@ -298,7 +294,7 @@ mục 10.
       "id": 4,
       "goal": "avoid_third",
       "seedEdges": [
-        [1, 1, "H"], [2, 0, "H"]
+        [2, 0, "H"], [2, 0, "V"], [3, 0, "H"]
       ],
       "allowedEdges": [
         [2, 1, "H"], [1, 2, "V"]
@@ -327,7 +323,7 @@ mục 10.
       "aiMoves": [],
       "controls": ["timeLimit", "boardSize", "difficulty"],
       "title": "Bước 5/5",
-      "instruction": "Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.",
+      "instruction": "Bàn chỉ có các chấm tròn — bạn tự nối mọi cạnh giữa chúng, kể cả các cạnh ở mép bàn.",
       "hint": "Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.",
       "successLine": "Hết hướng dẫn. Chơi ván đầu tiên nhé!",
       "advanceOn": "optionsExplored",
@@ -346,11 +342,9 @@ mục 10.
   `turnEnded` (lượt chuyển sang máy), `dangerousEdgeAvoided` (người chơi bấm cạnh an toàn ở bước 4),
   `optionsExplored` (đã chạm một control).
 - Bước 3: nếu người chơi bấm cạnh **không** nằm trong `allowedEdges` → không phản hồi, đúng khung chung.
-  Nếu bấm `[1,2,'V']` (khuyến nghị) thì máy bấm `[2,0,'H']` và kịch bản rất sạch (bàn 3×3 có **12 cạnh
-  trong**; sau bước 3 mới dùng 6, còn 6 cho ván tiếp).
-- Bước 2: `seedEdges` **không** chứa `[0,0,'H']`, `[0,0,'V']`, `[3,0,'H']`, `[3,1,'H']`… vì đó là viền —
-  viền đã ngầm tô. Nếu Dev render thiếu viền thì ô `(0,0)` sẽ hiện 3 cạnh nhưng người chơi đếm chỉ thấy 1,
-  gây hiểu sai. **Luôn vẽ viền trước.**
+  Bàn 3×3 có **24 cạnh** chơi được (kể cả cạnh mép bàn); sau bước 3 mới dùng 6, còn 18 cho ván tiếp.
+- Bước 2: `seedEdges` chứa đủ 3 cạnh `[0,0,'H']`, `[0,0,'V']`, `[1,0,'H']` để ô `(0,0)` thực sự có 3 cạnh,
+  không có viền ngầm hiểu nào.
 
 ---
 
@@ -363,12 +357,12 @@ Mỗi thẻ gồm: **tiêu đề** + **một câu** + **hình vẽ canvas tĩnh*
 
 | # | Tiêu đề | Câu (nguyên văn) | Minh hoạ canvas tĩnh (mô tả cho Dev) |
 |---|---|---|---|
-| 1 | Tô một đoạn thẳng | `Mỗi lượt, bạn tô một đoạn thẳng còn trống.` | Lưới 3×3 thu nhỏ, viền ngoài nét đậm. Một cạnh dọc ở giữa bên trái vừa tô màu xanh dương. Không có gì khác đổi. |
-| 2 | Kín 4 cạnh được một ô | `Ô đủ 4 cạnh thì thuộc về người tô cạnh cuối, và người đó đi tiếp.` | Cùng lưới. Một ô góc trên-trái **đã tô kín**, ruột ô đổ màu xanh dương nhạt, có dấu **tick** mảnh (nét SVG, không phải emoji) giữa ô. Ba cạnh của nó cùng màu người chơi. |
+| 1 | Tô một đoạn thẳng | `Mỗi lượt, bạn tô một đoạn thẳng còn trống.` | Lưới 4×4 chấm tròn (3×3 ô, không có viền vẽ sẵn). Một cạnh dọc ở giữa bên trái vừa tô màu xanh dương. Không có gì khác đổi. |
+| 2 | Kín 4 cạnh được một ô | `Ô đủ 4 cạnh thì thuộc về người tô cạnh cuối, và người đó đi tiếp.` | Cùng lưới. Một ô góc trên-trái **đã tô kín đủ 4 cạnh**, ruột ô đổ màu xanh dương nhạt, có dấu **tick** mảnh (nét SVG, không phải emoji) giữa ô. Bốn cạnh của nó cùng màu người chơi. |
 | 3 | Thấy ô 3 cạnh thì tránh | `Để ô thiếu đúng 1 cạnh là dâng ô cho đối thủ.` | Cùng lưới. Một ô góc dưới-phải có **3 cạnh đã tô**, cạnh thứ 4 còn trống. Ô đó có viền ngoài màu cam mảnh, và mũi tên cong nhỏ chỉ từ phía người chơi **ra xa** ô đó (nói "đừng vào"). |
 
 **Thông số vẽ chung cho 3 hình:** mỗi hình là một canvas riêng `176 × 176` px CSS (nhân `devicePixelRatio`
-cap 2x), nền trong suốt, lưới cách đều 48 px, độ dày viền ngoài 3 px, cạnh trong 2 px, bo tròn đầu cạnh
+cap 2x), nền trong suốt, lưới cách đều 48 px, chấm tròn bán kính 2.5 px, cạnh độ dày 2 px, bo tròn đầu cạnh
 1 px. Vẽ **một lần** lúc mở màn hình, không có animation.
 
 **Nút cuối màn hình:**
@@ -438,7 +432,7 @@ hộp đóng lại và phần thưởng là của mình.**
 |---|---|---|
 | **Cạnh** | Đoạn thẳng nối hai chấm. Tô một cạnh mỗi lượt. | Một **thanh ghép** của nắp hộp. |
 | **Ô** | Hình vuông do 4 cạnh ghép lại. | Một **cái hộp**. |
-| **Mép bàn** | Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối. | **Mép tờ giấy** — không phải thanh ghép của hộp nào. |
+| **Mép bàn** | Cạnh nằm sát mép ngoài cùng của bàn. Vẫn tô và tính điểm bình thường như mọi cạnh khác. | **Thanh ghép ở rìa ngoài** của khung hộp — vẫn phải tự ghép mới kín được hộp ở góc và mép. |
 | **Giữ lượt / combo** | Kín được ô thì được đi ngay một lần nữa, không mất lượt. | Đóng xong một hộp thì **được chơi thêm lượt** như phần thưởng. |
 | **Cạnh thứ 3 (cạnh xấu)** | Cạnh làm cho một ô chỉ còn thiếu 1 cạnh. Tô nó = dọn sẵn ô cho đối thủ. | Bạn **hé nắp hộp** lên — người sau chỉ việc đóng lại và lấy hộp. |
 | **Chuỗi (chain)** | Một dãy ô dính nhau, mỗi lần đóng ô này lại mở sẵn ô kế tiếp. Ai đóng ô đầu chuỗi thì ăn gần cả dãy. | Một **dãy hộp xếp liền**, mở hộp này là lộ ra hộp sau. |
@@ -459,8 +453,8 @@ Năm mẹo, mỗi mẹo một ý. Không nói tới thuật toán, không nói "
 3. **Hy sinh ít ô.** Đôi khi phải chịu nhường 2 ô nhỏ để giành một dãy to. 2 ô đổi 6 ô là lời.
 4. **Khống chế nước đi cuối.** Đếm thử: nếu gần hết bàn mà hai bên ngang điểm, lựa sao cho nước cuối cùng
    là của mình.
-5. **Đếm cạnh còn lại.** Bàn `n×n` có `2·n·(n+1)` cạnh, trừ đi viền `4n` cạnh → còn `2n(n−1)` cạnh trong để
-   chơi. Ví dụ bàn 3×3 có **12** cạnh trong. Biết còn bao nhiêu cạnh giúp biết sắp hết chưa.
+5. **Đếm cạnh còn lại.** Bàn `n×n` có tất cả `2·n·(n+1)` cạnh để chơi (kể cả các cạnh ở mép bàn).
+   Ví dụ bàn 3×3 có **24** cạnh. Biết còn bao nhiêu cạnh giúp biết sắp hết chưa.
 
 ---
 

@@ -17,8 +17,8 @@ import {
   boxesClosedBy,
   createGame,
   edgeKey,
-  isInteriorEdge,
   isLegal,
+  isOnBoard,
   legalEdges,
   restoreGame,
   score,
@@ -81,16 +81,16 @@ test('TUTORIAL_STEPS: câu chữ nguyên văn docs/30-TUTORIAL.md §3', () => {
   const expected = {
     1: {
       instruction: 'Bàn chỉ có các chấm tròn. Bấm vào khoảng giữa hai chấm để nối một cạnh.',
-      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh sát mép bàn không tô được.',
+      hint: 'Mỗi lần chỉ tô được một cạnh. Cạnh nào nối giữa hai chấm cũng tô được.',
       successLine: 'Xong. Lượt chuyển sang máy.',
     },
     2: {
-      instruction: 'Ô góc này mới có 2 cạnh, còn thiếu 2 cạnh nữa mới kín. Cả 4 cạnh bạn đều phải tô.',
+      instruction: 'Ô góc này đã có 3 cạnh, chỉ còn thiếu 1 cạnh nữa là kín. Bấm vào cạnh còn trống để đóng ô.',
       hint: 'Kín 4 cạnh là mình được ô.',
       successLine: 'Kín ô rồi! Ô đó là của bạn, và bạn được đi tiếp.',
     },
     3: {
-      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Ô đó đủ 4 cạnh đều do bạn tô. Tô thêm một cạnh nữa đi.',
+      instruction: 'Bạn vừa kín ô nên vẫn là lượt bạn. Tô thêm một cạnh nữa đi.',
       hint: 'Đây là lần đi thứ hai liên tiếp của bạn.',
       successLine: 'Đó là chơi luân phiên: hết lượt thì đến máy.',
     },
@@ -101,7 +101,7 @@ test('TUTORIAL_STEPS: câu chữ nguyên văn docs/30-TUTORIAL.md §3', () => {
       failLine: 'Cạnh đó mở ô cho máy mất rồi. Thử lại nhé.',
     },
     5: {
-      instruction: 'Bàn chỉ có các chấm tròn — bạn nối cạnh giữa chúng. Cạnh sát mép bàn là viền, không tô được.',
+      instruction: 'Bàn chỉ có các chấm tròn — bạn tự nối mọi cạnh giữa chúng, kể cả các cạnh ở mép bàn.',
       hint: 'Thử bấm vào hàng tùy chọn bên dưới: thời gian, kích thước, độ khó.',
       successLine: 'Hết hướng dẫn. Chơi ván đầu tiên nhé!',
     },
@@ -128,19 +128,19 @@ test('TUTORIAL_STEPS: thời lượng chờ đúng tài liệu (700/1200/900/900
   assert.deepEqual(byId[4].dangerBox, [2, 0]);
 });
 
-test('mọi cạnh trong allowedEdges/decoyEdges là cạnh TRONG và CHƯA TÔ ở trạng thái seedEdges', () => {
+test('mọi cạnh trong allowedEdges/decoyEdges nằm trên bàn và CHƯA TÔ ở trạng thái seedEdges', () => {
   for (const step of TUTORIAL_STEPS.steps) {
     const g = boardFromSeed(step);
     const checked = [...step.allowedEdges, ...step.decoyEdges];
     for (const e of checked) {
-      assert.ok(isInteriorEdge(e, g.n), `bước ${step.id}: ${JSON.stringify(e)} không phải cạnh trong`);
+      assert.ok(isOnBoard(e, g.n), `bước ${step.id}: ${JSON.stringify(e)} không nằm trên bàn`);
       assert.equal(isLegal(g, e), true, `bước ${step.id}: ${JSON.stringify(e)} đã bị tô ở seed`);
       assert.equal(g.edges.has(edgeKey(e)), false);
     }
-    // Không cạnh nào trong seed trùng nhau, và mọi seed đều là cạnh trong.
+    // Không cạnh nào trong seed trùng nhau, và mọi seed đều nằm trên bàn.
     const keys = new Set();
     for (const e of step.seedEdges) {
-      assert.ok(isInteriorEdge(e, g.n), `bước ${step.id}: seed ${JSON.stringify(e)} không phải cạnh trong`);
+      assert.ok(isOnBoard(e, g.n), `bước ${step.id}: seed ${JSON.stringify(e)} không nằm trên bàn`);
       const k = edgeKey(e);
       assert.equal(keys.has(k), false, `bước ${step.id}: seed trùng ${k}`);
       keys.add(k);
@@ -318,10 +318,10 @@ test('Màn "Hướng dẫn nhanh": 3 thẻ, đủ tiêu đề + câu nguyên vă
   assert.deepEqual(QUICK_GUIDE.cards.map((c) => c.title), [
     'Tô một đoạn thẳng', 'Kín 4 cạnh được một ô', 'Thấy ô 3 cạnh thì tránh',
   ]);
-  // Mỗi minh hoạ phải dựng được trên bàn 3×3 và các cạnh seed là cạnh trong.
+  // Mỗi minh hoạ phải dựng được trên bàn 3×3 và các cạnh seed nằm trên bàn.
   for (const card of QUICK_GUIDE.cards) {
-    for (const e of card.seedEdges) assert.ok(isInteriorEdge(e, TUTORIAL_STEPS.boardSize));
-    for (const e of card.warnEdges || []) assert.ok(isInteriorEdge(e, TUTORIAL_STEPS.boardSize));
+    for (const e of card.seedEdges) assert.ok(isOnBoard(e, TUTORIAL_STEPS.boardSize));
+    for (const e of card.warnEdges || []) assert.ok(isOnBoard(e, TUTORIAL_STEPS.boardSize));
   }
 });
 
@@ -375,8 +375,10 @@ test('Gợi ý §5.3: đúng thứ tự ưu tiên và câu nguyên văn', () => 
 test('Gợi ý: dựng từ bàn thật cho ra câu đúng tình huống', () => {
   // Bàn có nước ăn ngay → câu 1.
   const g1 = createGame({ n: 3 });
+  applyMove(g1, [0, 0, 'H']);
+  applyMove(g1, [0, 0, 'V']);
   applyMove(g1, [1, 0, 'H']);
-  assert.equal(pickHintLine({ myCapturable: 1, opponentThird: 0, anyThird: 1, remaining: 11, total: 12 }).text, HINT_LINES[0].text);
+  assert.equal(pickHintLine({ myCapturable: 1, opponentThird: 0, anyThird: 1, remaining: 21, total: 24 }).text, HINT_LINES[0].text);
 });
 
 test('Bảng thuật ngữ §6: đủ 6 mục nguyên văn và ẩn dụ xuyên suốt', () => {
@@ -389,7 +391,7 @@ test('Bảng thuật ngữ §6: đủ 6 mục nguyên văn và ẩn dụ xuyên 
   assert.deepEqual(GLOSSARY.entries.map((e) => e.term), [
     'Cạnh', 'Ô', 'Mép bàn', 'Giữ lượt', 'Cạnh thứ 3 (cạnh xấu)', 'Chuỗi',
   ]);
-  assert.equal(GLOSSARY.entries[2].plain, 'Cạnh nằm sát mép ngoài cùng của bàn. Không tô được, không tính điểm — bàn chỉ có các chấm để nối.');
+  assert.equal(GLOSSARY.entries[2].plain, 'Cạnh nằm sát mép ngoài cùng của bàn. Vẫn tô và tính điểm bình thường như mọi cạnh khác.');
   for (const e of GLOSSARY.entries) {
     assert.ok(e.term && e.plain && e.metaphor, 'mỗi mục cần term/plain/metaphor');
   }

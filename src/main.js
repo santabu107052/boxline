@@ -973,7 +973,7 @@ function boot() {
     const thirds = thirdEdgeBoxes(game);
     const caps = legalEdges(game).filter((e) => boxesClosedBy(game, e).length > 0);
     const opponentThird = thirds.filter((b) => boxState(game, b.br, b.bc).vs === 0 || true).length;
-    const total = 2 * game.n * (game.n - 1);
+    const total = 2 * game.n * (game.n + 1);
     return {
       myCapturable: currentIsHuman() === (game.turn === 'A') ? caps.length : 0,
       opponentThird,
@@ -993,7 +993,7 @@ function boot() {
     if (readJSON(STORAGE_KEYS.tooltipSeen, false)) return;
     if (!readJSON(STORAGE_KEYS.tutorialDone, false)) return;
     const s = score(game);
-    const total = 2 * game.n * (game.n - 1);
+    const total = 2 * game.n * (game.n + 1);
     const empty = legalEdges(game).length;
     if (s.total > 0 || empty < total * 0.6) return;
     tooltipShown = true;
@@ -1030,11 +1030,16 @@ function boot() {
     const n = 3;
     const origin = (size - step * n) / 2;
     const P = (i, j) => ({ x: origin + i * step, y: origin + j * step });
-    // Viền ngoài 3px
-    ctx.strokeStyle = v('--border-strong');
-    ctx.lineWidth = 3;
-    ctx.lineJoin = 'round';
-    ctx.strokeRect(origin, origin, step * n, step * n);
+    // Các chấm tròn của lưới (không vẽ sẵn viền ngoài)
+    ctx.fillStyle = v('--grid-dot') || v('--border-strong');
+    for (let r = 0; r <= n; r++) {
+      for (let c = 0; c <= n; c++) {
+        const p = P(c, r);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
     // Cạnh trong 2px, cap tròn 1px
     ctx.lineCap = 'round';
     const playerA = v('--player-a');

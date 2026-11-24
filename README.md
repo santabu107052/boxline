@@ -84,13 +84,13 @@ npm test
 
 Kết quả mong đợi: **54 pass / 0 fail**. Trong đó:
 
-- **luật chơi**: tổng điểm luôn `n²`, `applyMove` idempotent, viền ngoài không bao giờ hợp lệ,
-  ô góc kín bằng 2 cạnh trong (viền tính sẵn), ô mép 3 cạnh, ô giữa 4 cạnh, undo, passTurn,
+- **luật chơi**: tổng điểm luôn `n²`, `applyMove` idempotent, tổng `2n(n+1)` cạnh hợp lệ
+  (gồm cả cạnh mép bàn), mọi ô (góc, mép, giữa) đều cần đủ 4 cạnh mới kín, undo, passTurn,
   serialize/restore;
 - **AI**: Hard thắng Easy ≥ 85%, Hard thắng Medium ≥ 70% (N = 200 ván, **đổi bên mỗi ván** để
   triệt tiêu lợi thế đi trước), thời gian nghĩ ≤ 60 ms/lượt trên bàn 8×8;
-- **tutorial**: mọi cạnh trong `allowedEdges`/`decoyEdges` là cạnh trong và chưa tô; bước 2 kín
-  đúng 1 ô; cạnh an toàn ở bước 4 không kín ô và không sinh thêm ô 3 cạnh; máy ở bước 3 giữ bàn sạch.
+- **tutorial**: mọi cạnh trong `allowedEdges`/`decoyEdges` đều nằm trên bàn (`isOnBoard`) và chưa tô;
+  bước 2 kín đúng 1 ô; cạnh an toàn ở bước 4 không kín ô và không sinh thêm ô 3 cạnh; máy ở bước 3 giữ bàn sạch.
 
 ## 4. Cách chụp screenshot
 

@@ -15,8 +15,8 @@ import {
   boxesClosedBy,
   cloneState,
   edgeKey,
-  isInteriorEdge,
   isLegal,
+  isOnBoard,
   isOver,
   legalEdges,
   normEdge,
@@ -66,7 +66,7 @@ function opensThird(state, edge) {
 /** Cạnh duy nhất còn thiếu của ô đang 3 cạnh (nếu có). */
 function missingEdgeOf(state, br, bc) {
   for (const e of boxEdges(br, bc)) {
-    if (isInteriorEdge(e, state.n) && !state.edges.has(edgeKey(e))) return e;
+    if (isOnBoard(e, state.n) && !state.edges.has(edgeKey(e))) return e;
   }
   return null;
 }
@@ -210,29 +210,29 @@ const geomCache = new Map();
 function geomFor(n) {
   const hit = geomCache.get(n);
   if (hit) return hit;
-  const interior = [];                       // cạnh trong, thứ tự cố định
-  const hi = new Array((n + 1) * n);         // chỉ số cạnh ngang (r, c)
-  const vi = new Array(n * (n + 1));         // chỉ số cạnh dọc (r, c)
-  for (let r = 1; r <= n - 1; r++) {
+  const interior = [];                       // toàn bộ 2n(n+1) cạnh trên bàn
+  const hi = new Array((n + 1) * n);         // chỉ số cạnh ngang (r, c), r = 0..n
+  const vi = new Array(n * (n + 1));         // chỉ số cạnh dọc (r, c), c = 0..n
+  for (let r = 0; r <= n; r++) {
     for (let c = 0; c < n; c++) {
       hi[r * n + c] = interior.push([r, c, 'H']) - 1;
     }
   }
   for (let r = 0; r < n; r++) {
-    for (let c = 1; c <= n - 1; c++) {
+    for (let c = 0; c <= n; c++) {
       vi[r * (n + 1) + c] = interior.push([r, c, 'V']) - 1;
     }
   }
-  const boxes = [];                          // mỗi ô: cạnh trong + số cạnh viền
+  const boxes = [];                          // mỗi ô có đủ 4 cạnh
   for (let br = 0; br < n; br++) {
     for (let bc = 0; bc < n; bc++) {
-      const idx = [];
-      let border = 0;
-      if (br === 0) border++; else idx.push(hi[br * n + bc]);
-      if (br + 1 === n) border++; else idx.push(hi[(br + 1) * n + bc]);
-      if (bc === 0) border++; else idx.push(vi[br * (n + 1) + bc]);
-      if (bc + 1 === n) border++; else idx.push(vi[br * (n + 1) + bc + 1]);
-      boxes.push({ idx, need: 4 - border });
+      const idx = [
+        hi[br * n + bc],
+        hi[(br + 1) * n + bc],
+        vi[br * (n + 1) + bc],
+        vi[br * (n + 1) + bc + 1],
+      ];
+      boxes.push({ idx, need: 4 });
     }
   }
   const adj = interior.map(() => []);
