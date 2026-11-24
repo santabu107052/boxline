@@ -331,6 +331,43 @@ export function createRenderer(canvas, deps = {}) {
     }
     ctx.restore();
 
+    // 6b) Tutorial: làm nổi các cạnh được phép bấm (và cạnh mồi ở bước 4) để người chơi
+    //     trên cả màn hình cảm ứng (iPad/mobile) lẫn desktop thấy rõ chỗ bấm.
+    if (Array.isArray(ui.tutorialHintEdges) && ui.tutorialHintEdges.length) {
+      ctx.save();
+      ctx.strokeStyle = colors.accent || colors.players.A;
+      ctx.globalAlpha = 0.65;
+      ctx.lineWidth = ew + 1.5;
+      ctx.lineCap = 'round';
+      if (ctx.setLineDash) ctx.setLineDash([6, 5]);
+      for (const e of ui.tutorialHintEdges) {
+        const pts = edgePoints(e);
+        ctx.beginPath();
+        ctx.moveTo(pts.x1, pts.y1);
+        ctx.lineTo(pts.x2, pts.y2);
+        ctx.stroke();
+      }
+      if (ctx.setLineDash) ctx.setLineDash([]);
+      ctx.restore();
+    }
+    if (Array.isArray(ui.tutorialDecoyEdges) && ui.tutorialDecoyEdges.length) {
+      ctx.save();
+      ctx.strokeStyle = colors.players.B;
+      ctx.globalAlpha = 0.45;
+      ctx.lineWidth = ew + 1;
+      ctx.lineCap = 'round';
+      if (ctx.setLineDash) ctx.setLineDash([4, 5]);
+      for (const e of ui.tutorialDecoyEdges) {
+        const pts = edgePoints(e);
+        ctx.beginPath();
+        ctx.moveTo(pts.x1, pts.y1);
+        ctx.lineTo(pts.x2, pts.y2);
+        ctx.stroke();
+      }
+      if (ctx.setLineDash) ctx.setLineDash([]);
+      ctx.restore();
+    }
+
     // 7) Preview cạnh hover.
     if (ui.previewEdge && !reduced) {
       const player = ui.previewPlayer || state.turn;

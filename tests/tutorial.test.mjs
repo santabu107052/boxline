@@ -426,3 +426,54 @@ test('restoreGame giữ được bàn tutorial dở (dùng cho khôi phục gi�
   assert.equal(boxMissing(back, 0, 0), boxMissing(g, 0, 0));
   assert.equal(back.turn, g.turn);
 });
+
+test('luồng trọn vẹn 5 bước Tutorial 1/5 → 5/5 chạy thông suốt không kẹt', () => {
+  // Bước 1: chọn 1 cạnh trong allowedEdges → chuyển lượt máy
+  const s1 = getStep(1);
+  const g1 = boardFromSeed(s1);
+  const r1 = applyMove(g1, s1.allowedEdges[0]);
+  assert.equal(r1.ok, true);
+  assert.equal(r1.keepsTurn, false);
+
+  // Bước 2: chọn cạnh duy nhất → kín (0,0), điểm 1-0, giữ lượt
+  const s2 = getStep(2);
+  const g2 = boardFromSeed(s2);
+  assert.equal(score(g2).total, 0);
+  const r2 = applyMove(g2, s2.allowedEdges[0]);
+  assert.equal(r2.ok, true);
+  assert.deepEqual(r2.closed, [[0, 0]]);
+  assert.equal(r2.keepsTurn, true);
+  assert.equal(score(g2).A, 1);
+
+  // Bước 3: ô (0,0) đã kín (1-0); người chơi chọn 1 trong 2 allowedEdges, máy đáp trả cặp còn lại
+  const s3 = getStep(3);
+  for (const pick of s3.allowedEdges) {
+    const g3 = boardFromSeed(s3);
+    assert.equal(score(g3).total, 1);
+    const r3 = applyMove(g3, pick);
+    assert.equal(r3.ok, true);
+    assert.equal(r3.keepsTurn, false);
+    const key = `[${pick[0]},${pick[1]},${pick[2]}]`;
+    const rAi = applyMove(g3, s3.aiReply[key][0]);
+    assert.equal(rAi.ok, true);
+    assert.equal(rAi.keepsTurn, false);
+    assert.equal(countThirds(g3), 0);
+  }
+
+  // Bước 4: bấm decoy thì kín (2,0) và hoàn tác sạch; bấm allowedEdges thì né an toàn
+  const s4 = getStep(4);
+  const g4 = boardFromSeed(s4);
+  const rDecoy = applyMove(g4, s4.decoyEdges[0]);
+  assert.equal(rDecoy.ok, true);
+  assert.deepEqual(rDecoy.closed, [[2, 0]]);
+  assert.equal(undoMove(g4).ok, true);
+  const rSafe = applyMove(g4, s4.allowedEdges[0]);
+  assert.equal(rSafe.ok, true);
+  assert.deepEqual(rSafe.closed, []);
+  assert.equal(countThirds(g4), 1);
+
+  // Bước 5: có 3 control và không cho bấm cạnh nào
+  const s5 = getStep(5);
+  assert.equal(s5.allowedEdges.length, 0);
+  assert.deepEqual(s5.controls, ['timeLimit', 'boardSize', 'difficulty']);
+});

@@ -452,6 +452,15 @@ function boot() {
       warnBox: warnBox || null,
       warnFlash: !!warnBox && now() < warnFlashUntil,
     };
+    if (isTutorialBoard() && !tutorial.busy) {
+      const step = getStep(tutorial.index + 1);
+      if (step && Array.isArray(step.allowedEdges) && step.allowedEdges.length) {
+        uiState.tutorialHintEdges = step.allowedEdges.filter((e) => isLegal(s, e));
+      }
+      if (step && Array.isArray(step.decoyEdges) && step.decoyEdges.length) {
+        uiState.tutorialDecoyEdges = step.decoyEdges.filter((e) => isLegal(s, e));
+      }
+    }
     if (hoverEdge && !isTutorialBoard()) {
       uiState.previewEdge = hoverEdge;
       uiState.previewPlayer = s.turn;
@@ -486,8 +495,7 @@ function boot() {
 
   function syncHud(bump) {
     if (!game || !match) return;
-    // Tutorial KHÔNG tính điểm (tài liệu: "Tutorial không tính thắng thua") → HUD luôn 0–0.
-    const s = isTutorialBoard() ? { A: 0, B: 0 } : score(game);
+    const s = score(game);
     ui.updateHud({
       scoreA: s.A,
       scoreB: s.B,
@@ -1153,7 +1161,7 @@ function boot() {
     pointerDownId = null;
     globalThis.clearTimeout(tutorialAdvanceTimer);
     globalThis.clearTimeout(tutorialAiTimer);
-    tutorial = { active: true, index: 0, board4: null, touchedControl: false, aiMoved: false };
+    tutorial = { active: true, index: 0, board4: null, touchedControl: false, aiMoved: false, busy: false };
     match = makeMatch({
       mode: 'ai',
       size: TUTORIAL_STEPS.boardSize,
@@ -1200,6 +1208,7 @@ function boot() {
     tutorial.index = id - 1;
     tutorial.aiMoved = false;
     tutorial.touchedControl = false;
+    tutorial.busy = false;
     globalThis.clearTimeout(tutorialAdvanceTimer);
     globalThis.clearTimeout(tutorialAiTimer);
     warnBox = null;
@@ -1248,11 +1257,12 @@ function boot() {
 
   function commitTutorialMove(edge) {
     const step = getStep(tutorial.index + 1);
-    if (!step || !game) return false;
+    if (!step || !game || tutorial.busy) return false;
     if (isDecoy(edge)) {
       // Bước 4: cạnh mồi → rung + nháy đỏ + hoàn tác sau 900ms.
       const res = applyMove(game, edge);
       if (!res.ok) return false;
+      tutorial.busy = true;
       lastMoveInfo = { edge, player: res.player, closed: res.closed };
       highlightAt = now();
       renderer.animateMove({ edge, player: res.player, closed: res.closed });
@@ -1271,10 +1281,14 @@ function boot() {
       return true;
     }
     if (!listHasEdge(step.allowedEdges, edge)) {
-      return false; // ngoài vùng cho phép → không phản hồi
+      if (isLegal(game, edge) && Array.isArray(step.allowedEdges) && step.allowedEdges.length) {
+        ui.showToast('Hãy bấm vào cạnh nét đứt đang gợi ý');
+      }
+      return false; // ngoài vùng cho phép → nhắc nhẹ, không đi nước
     }
     const res = applyMove(game, edge);
     if (!res.ok) return false;
+    tutorial.busy = true;
     lastMoveInfo = { edge, player: res.player, closed: res.closed };
     highlightAt = now();
     renderer.animateMove({ edge, player: res.player, closed: res.closed });
@@ -1417,7 +1431,14 @@ function boot() {
       return true;
     });
     if (!valid.length) return null;
-    valid.sort((a, b) => a.dist - b.dist);
+    valid.sort((a, b) => {
+      if (onlyLegal && isTutorialBoard()) {
+        const aOk = allowedNow(a.edge) || isDecoy(a.edge) ? 0 : 1;
+        const bOk = allowedNow(b.edge) || isDecoy(b.edge) ? 0 : 1;
+        if (aOk !== bOk) return aOk - bOk;
+      }
+      return a.dist - b.dist;
+    });
     return valid[0].edge;
   }
 
